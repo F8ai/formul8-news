@@ -1,0 +1,211 @@
+🚀 Direct RSS Ingestion (All Endpoints)
+========================================
+
+This bypasses the orchestrator and calls RSS connector directly
+
+📊 Found 48 active RSS endpoints
+
+📰 New Cannabis Ventures
+   URL: https://www.newcannabisventures.com/feed/
+   ✅ Processed: 10 | Created: 0 | Duplicates: 10 | Errors: 0
+
+📰 Cannabis Industry Journal
+   URL: https://cannabisindustryjournal.com/feed/
+   ✅ Processed: 10 | Created: 0 | Duplicates: 10 | Errors: 0
+
+📰 Americans for Safe Access
+   URL: https://www.safeaccessnow.org/blog.rss
+   ✅ Processed: 20 | Created: 0 | Duplicates: 20 | Errors: 0
+
+📰 New Cannabis Ventures
+   URL: https://www.newcannabisventures.com/category/news/
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Cannabis Industry Journal
+   URL: https://cannabisindustryjournal.com/category/news/
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Americans for Safe Access
+   URL: https://www.safeaccessnow.org/blog
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Cannabis Industry Journal
+   URL: https://cannabisindustryjournal.com/
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 OpenAI Blog
+   URL: https://openai.com/blog/rss.xml
+   ✅ Processed: 875 | Created: 0 | Duplicates: 875 | Errors: 0
+
+📰 Anthropic News
+   URL: https://www.anthropic.com/news/rss.xml
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Hugging Face Blog
+   URL: https://huggingface.co/blog/feed.xml
+   ✅ Processed: 743 | Created: 0 | Duplicates: 743 | Errors: 0
+
+📰 Google AI Blog
+   URL: http://ai.googleblog.com/feeds/posts/default
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 The Batch by deeplearning.ai
+   URL: https://www.deeplearning.ai/the-batch/feed/
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 AI News - MIT Technology Review
+   URL: https://www.technologyreview.com/topic/artificial-intelligence/feed
+   ✅ Processed: 10 | Created: 0 | Duplicates: 10 | Errors: 0
+
+📰 VentureBeat AI
+   URL: https://venturebeat.com/category/ai/feed/
+   ✅ Processed: 7 | Created: 0 | Duplicates: 7 | Errors: 0
+
+📰 MJBizDaily
+   URL: https://mjbizdaily.com/feed/
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Marijuana Moment
+   URL: https://www.marijuanamoment.net/feed/
+   ✅ Processed: 10 | Created: 0 | Duplicates: 10 | Errors: 0
+
+📰 Leafly News
+   URL: https://www.leafly.com/news/feed
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 High Times
+   URL: https://hightimes.com/feed/
+   ✅ Processed: 10 | Created: 0 | Duplicates: 10 | Errors: 0
+
+📰 Cannabis Business Times
+   URL: https://www.cannabisbusinesstimes.com/rss.xml
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Green Market Report
+   URL: https://www.greenmarketreport.com/feed/
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 NORML News
+   URL: https://norml.org/news/feed/
+   ✅ Processed: 10 | Created: 0 | Duplicates: 10 | Errors: 0
+
+📰 Ganjapreneur
+   URL: https://www.ganjapreneur.com/feed/
+   ✅ Processed: 10 | Created: 0 | Duplicates: 10 | Errors: 0
+
+📰 Hemp Industry Daily
+   URL: https://hempindustrydaily.com/feed/
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Cannabis Wire
+   URL: https://cannabiswire.com/feed/
+   ✅ Processed: 12 | Created: 0 | Duplicates: 12 | Errors: 0
+
+📰 TechCrunch AI
+   URL: https://techcrunch.com/category/artificial-intelligence/feed/
+   ✅ Processed: 19 | Created: 0 | Duplicates: 19 | Errors: 0
+
+📰 The Verge AI
+   URL: https://www.theverge.com/ai-artificial-intelligence/rss/index.xml
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Ars Technica AI
+   URL: https://feeds.arstechnica.com/arstechnica/technology-lab
+   ✅ Processed: 20 | Created: 20 | Duplicates: 0 | Errors: 0
+
+📰 Wired AI
+   URL: https://www.wired.com/feed/tag/ai/latest/rss
+   ✅ Processed: 10 | Created: 10 | Duplicates: 0 | Errors: 0
+
+📰 Papers with Code
+   URL: https://paperswithcode.com/feeds/latest/
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 DeepMind Blog
+   URL: https://deepmind.google/blog/rss.xml
+   ✅ Processed: 100 | Created: 93 | Duplicates: 7 | Errors: 0
+
+📰 Meta AI Blog
+   URL: https://ai.meta.com/blog/rss/
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Microsoft AI Blog
+   URL: https://blogs.microsoft.com/ai/feed/
+   ✅ Processed: 10 | Created: 10 | Duplicates: 0 | Errors: 0
+
+📰 AWS Machine Learning Blog
+   URL: https://aws.amazon.com/blogs/machine-learning/feed/
+   ✅ Processed: 20 | Created: 20 | Duplicates: 0 | Errors: 0
+
+📰 NVIDIA AI Blog
+   URL: https://blogs.nvidia.com/feed/
+   ✅ Processed: 18 | Created: 17 | Duplicates: 1 | Errors: 0
+
+📰 Reuters Technology
+   URL: https://www.reuters.com/technology/rss
+   ✅ Processed: 0 | Created: 0 | Duplicates: 0 | Errors: 0
+
+📰 Hacker News
+   URL: https://news.ycombinator.com/rss
+   ✅ Processed: 30 | Created: 1 | Duplicates: 29 | Errors: 0
+
+📰 Nature News
+   URL: https://www.nature.com/nature.rss
+   ✅ Processed: 75 | Created: 75 | Duplicates: 0 | Errors: 0
+
+📰 Science Daily
+   URL: https://www.sciencedaily.com/rss/all.xml
+   ✅ Processed: 60 | Created: 60 | Duplicates: 0 | Errors: 0
+
+📰 Phys.org
+   URL: https://phys.org/rss-feed/
+   ✅ Processed: 30 | Created: 30 | Duplicates: 0 | Errors: 0
+
+📰 Quanta Magazine
+   URL: https://www.quantamagazine.org/feed/
+   ✅ Processed: 5 | Created: 5 | Duplicates: 0 | Errors: 0
+
+📰 Google News - Artificial Intelligence
+   URL: https://news.google.com/rss/search?q=artificial+intelligence&hl=en-US&gl=US&ceid=US:en
+   ✅ Processed: 102 | Created: 102 | Duplicates: 0 | Errors: 0
+
+📰 Google News - Machine Learning
+   URL: https://news.google.com/rss/search?q=machine+learning&hl=en-US&gl=US&ceid=US:en
+   ✅ Processed: 100 | Created: 94 | Duplicates: 6 | Errors: 0
+
+📰 Google News - ChatGPT
+   URL: https://news.google.com/rss/search?q=ChatGPT+OR+GPT-4+OR+OpenAI&hl=en-US&gl=US&ceid=US:en
+   ✅ Processed: 100 | Created: 99 | Duplicates: 1 | Errors: 0
+
+📰 Google News - AI Technology
+   URL: https://news.google.com/rss/search?q=AI+technology+OR+generative+AI&hl=en-US&gl=US&ceid=US:en
+   ✅ Processed: 100 | Created: 94 | Duplicates: 6 | Errors: 0
+
+📰 Google News - Cannabis
+   URL: https://news.google.com/rss/search?q=cannabis&hl=en-US&gl=US&ceid=US:en
+   ✅ Processed: 100 | Created: 100 | Duplicates: 0 | Errors: 0
+
+📰 Google News - Marijuana
+   URL: https://news.google.com/rss/search?q=marijuana&hl=en-US&gl=US&ceid=US:en
+   ✅ Processed: 100 | Created: 84 | Duplicates: 16 | Errors: 0
+
+📰 Google News - CBD
+   URL: https://news.google.com/rss/search?q=CBD+OR+cannabidiol&hl=en-US&gl=US&ceid=US:en
+   ✅ Processed: 100 | Created: 100 | Duplicates: 0 | Errors: 0
+
+📰 Google News - Cannabis Legalization
+   URL: https://news.google.com/rss/search?q=cannabis+legalization+OR+marijuana+legalization&hl=en-US&gl=US&ceid=US:en
+   ✅ Processed: 100 | Created: 76 | Duplicates: 24 | Errors: 0
+
+========================================
+📊 Ingestion Complete
+========================================
+
+Total processed: 0
+Total created: 0
+Total duplicates: 0
+Total errors: 0
+
+Total articles in database: 0
+
+✨ Done!
