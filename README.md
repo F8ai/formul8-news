@@ -75,7 +75,17 @@ Edit `.env.local` with your API keys:
 - `OPENAI_API_KEY`: For enrichment (summaries and embeddings)
 - `NEWS_API_KEY`: For news API connectors
 - `PATENT_API_KEY`: For patent API connectors
-- `LITERATURE_API_KEY`: For literature API connectors
+- `LITERATURE_API_KEY`: (Optional) PubMed API key for higher rate limits
+
+### PubMed Integration
+
+Track cannabis research articles from PubMed automatically:
+
+```bash
+./setup-pubmed.sh
+```
+
+This sets up automatic ingestion of cannabis-related research papers every 6 hours. See [PUBMED_SETUP.md](PUBMED_SETUP.md) for detailed configuration options.
 
 ### Database Schema
 

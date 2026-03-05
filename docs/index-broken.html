@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formul8 News | AI & Cannabis Industry Intelligence</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+    <meta name="description" content="Curated AI and cannabis industry news powered by Formul8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #34d399;
+            --primary-glow: rgba(16, 185, 129, 0.2);
+            --bg-dark: #0a0a0a;
+            --bg-card: #111111;
+            --bg-card-hover: #1a1a1a;
+            --border: #1f1f1f;
+            --border-light: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-dark);
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .header {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+        
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary-light);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 30% 40% 30%;
+            gap: 2rem;
+            align-items: start;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 6rem;
+        }
+        
+        .sidebar-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .category-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        
+        .category-link:hover {
+            background: var(--bg-card-hover);
+            color: var(--primary-light);
+            border-color: var(--border-light);
+        }
+        
+        .category-link.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-light);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        
+        .category-link-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .category-badge {
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        
+        .category-link.active .category-badge {
+            background: var(--primary);
+            color: var(--bg-dark);
+        }
+        
+        .main-content {
+            min-height: 100vh;
+        }
+        
+        .feed-header {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .feed-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .feed-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .articles-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .article-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .article-card:hover {
+            border-color: var(--border-light);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .article-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .article-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+        
+        .type-news {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+        }
+        
+        .article-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+        }
+        
+        .article-title a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .article-title a:hover {
+            color: var(--primary-light);
+        }
+        
+        .article-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            flex-wrap: wrap;
+        }
+        
+        .article-body {
+            padding: 1.5rem;
+        }
+        
+        .article-snippet {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        
+        .article-footer {
+            padding: 1rem 1.5rem;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+        }
+        
+        .article-topics {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .topic-tag {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--primary-light);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 1400px) {
+            .main-layout {
+                grid-template-columns: 25% 50% 25%;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">🌿</div>
+                <span>Formul8 News</span>
+            </a>
+            <div class="live-badge">
+                <span>🔴</span>
+                <span>Live Feed</span>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-layout">
+            <!-- Left Sidebar: AI Categories -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">🤖 AI Categories</h3>
+                    <div id="aiCategoryNav"></div>
+                </div>
+            </aside>
+            
+            <!-- Center: Main Feed -->
+            <main class="main-content">
+                <div class="feed-header">
+                    <h2 class="feed-title" id="feedTitle">Latest News</h2>
+                    <p class="feed-subtitle" id="feedSubtitle">All recent industry updates</p>
+                </div>
+                <div class="articles-list" id="articlesContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading news...</p>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Right Sidebar: Cannabis Categories -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">🌿 Cannabis Categories</h3>
+                    <div id="cannabisCategoryNav"></div>
+                </div>
+            </aside>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://gptfmaceymhubyuhqegu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwdGZtYWNleW1odWJ5dWhxZWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MzA1NzUsImV4cCI6MjA4ODMwNjU3NX0.BkohmTjlu9q0-Stu62EPj36fGoFlNXBGqFgaHAmiKhw';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let allArticles = [];
+        let currentCategory = 'all';
+        
+        const aiCategories = {
+            'Large Language Models': { icon: '🤖', topics: ['Large Language Models', 'Artificial Intelligence'] },
+            'AI Tools & Platforms': { icon: '🛠️', topics: ['AI Tools', 'AI Models', 'AI Infrastructure'] },
+            'Computer Vision': { icon: '👁️', topics: ['Computer Vision', 'Generative AI'] },
+            'AI Research': { icon: '🔬', topics: ['AI Research', 'Machine Learning'] },
+            'AI Business': { icon: '💼', topics: ['AI Business', 'AI Ethics'] }
+        };
+        
+        const cannabisCategories = {
+            'Cannabis Business': { icon: '💼', topics: ['Cannabis', 'Cannabis Business', 'Cannabis Finance'] },
+            'Medical & Research': { icon: '🔬', topics: ['Medical Cannabis', 'Cannabis Research', 'CBD', 'THC'] },
+            'Regulation & Policy': { icon: '⚖️', topics: ['Cannabis Regulation', 'Cannabis Policy'] },
+            'Cultivation': { icon: '🌱', topics: ['Cannabis Cultivation', 'Cannabis Technology'] }
+        };
+        
+        async function loadArticles() {
+            try {
+                const { data: articles, error } = await supabaseClient
+                    .from('signal_items')
+                    .select('id, type, title, url, published_at, content_snippet, created_at, news_items(source_name), signal_topics(topics(name))')
+                    .order('created_at', { ascending: false })
+                    .limit(100);
+                
+                if (error) throw error;
+                
+                allArticles = articles.map(article => ({
+                    ...article,
+                    source_name: article.news_items?.[0]?.source_name || 'Unknown',
+                    topics: article.signal_topics?.map(st => st.topics?.name).filter(Boolean) || []
+                }));
+                
+                renderCategoryNav();
+                displayArticles();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('articlesContainer').innerHTML = '<div class="loading"><p>⚠️ Failed to load articles</p></div>';
+            }
+        }
+        
+        function renderCategoryNav() {
+            // AI Categories
+            const aiNav = document.getElementById('aiCategoryNav');
+            const aiCounts = {};
+            Object.keys(aiCategories).forEach(cat => {
+                aiCounts[cat] = allArticles.filter(a => 
+                    a.topics.some(t => aiCategories[cat].topics.includes(t))
+                ).length;
+            });
+            
+            aiNav.innerHTML = `
+                <div class="category-link ${currentCategory === 'all' ? 'active' : ''}" onclick="selectCategory('all')">
+                    <span class="category-link-text">
+                        <span>📰</span>
+                        <span>All News</span>
+                    </span>
+                    <span class="category-badge">${allArticles.length}</span>
+                </div>
+                ${Object.entries(aiCategories).map(([cat, data]) => `
+                    <div class="category-link ${currentCategory === cat ? 'active' : ''}" onclick="selectCategory('${cat}')">
+                        <span class="category-link-text">
+                            <span>${data.icon}</span>
+                            <span>${cat}</span>
+                        </span>
+                        <span class="category-badge">${aiCounts[cat]}</span>
+                    </div>
+                `).join('')}
+            `;
+            
+            // Cannabis Categories
+            const cannabisNav = document.getElementById('cannabisCategoryNav');
+            const cannabisCounts = {};
+            Object.keys(cannabisCategories).forEach(cat => {
+                cannabisCounts[cat] = allArticles.filter(a => 
+                    a.topics.some(t => cannabisCategories[cat].topics.includes(t))
+                ).length;
+            });
+            
+            cannabisNav.innerHTML = Object.entries(cannabisCategories).map(([cat, data]) => `
+                <div class="category-link ${currentCategory === cat ? 'active' : ''}" onclick="selectCategory('${cat}')">
+                    <span class="category-link-text">
+                        <span>${data.icon}</span>
+                        <span>${cat}</span>
+                    </span>
+                    <span class="category-badge">${cannabisCounts[cat]}</span>
+                </div>
+            `).join('');
+        }
+        
+        function selectCategory(category) {
+            currentCategory = category;
+            renderCategoryNav();
+            displayArticles();
+            
+            const allCategories = { ...aiCategories, ...cannabisCategories };
+            const titles = {
+                'all': 'Latest News',
+                ...Object.fromEntries(Object.keys(allCategories).map(k => [k, `${allCategories[k].icon} ${k}`]))
+            };
+            
+            document.getElementById('feedTitle').textContent = titles[category] || 'Latest News';
+            document.getElementById('feedSubtitle').textContent = category === 'all' 
+                ? 'All recent industry updates' 
+                : `Latest ${category.toLowerCase()} news and updates`;
+        }
+        
+        function displayArticles() {
+            let filtered = allArticles;
+            
+            if (currentCategory !== 'all') {
+                const allCategories = { ...aiCategories, ...cannabisCategories };
+                if (allCategories[currentCategory]) {
+                    filtered = filtered.filter(a => 
+                        a.topics.some(t => allCategories[currentCategory].topics.includes(t))
+                    );
+                }
+            }
+            
+            const container = document.getElementById('articlesContainer');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="loading"><p>📰 No articles found</p></div>';
+                return;
+            }
+            
+            container.innerHTML = filtered.map(article => {
+                const date = article.published_at ? new Date(article.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown date';
+                const title = decodeHtml(article.title);
+                const source = decodeHtml(article.source_name);
+                const snippet = article.content_snippet ? decodeHtml(article.content_snippet) : '';
+                
+                return `
+                    <article class="article-card">
+                        <div class="article-header">
+                            <span class="article-type type-${article.type}">${article.type}</span>
+                            <h2 class="article-title">
+                                <a href="${article.url}" target="_blank">${title}</a>
+                            </h2>
+                            <div class="article-meta">
+                                <span>📅 ${date}</span>
+                                <span>📰 ${source}</span>
+                            </div>
+                        </div>
+                        ${snippet ? `<div class="article-body"><p class="article-snippet">${snippet}</p></div>` : ''}
+                        ${article.topics.length > 0 ? `
+                            <div class="article-footer">
+                                <div class="article-topics">
+                                    ${article.topics.map(t => `<span class="topic-tag">${decodeHtml(t)}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </article>
+                `;
+            }).join('');
+        }
+        
+        function decodeHtml(text) {
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = text;
+            return textarea.value;
+        }
+        
+        loadArticles();
+        setInterval(loadArticles, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

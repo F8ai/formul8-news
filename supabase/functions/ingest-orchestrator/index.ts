@@ -115,6 +115,7 @@ serve(async (req) => {
         let connectorResponse;
         let retryCount = 0;
         const maxRetries = 3;
+        const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
         while (retryCount < maxRetries) {
           try {
@@ -122,7 +123,8 @@ serve(async (req) => {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+                "Authorization": `Bearer ${serviceRoleKey}`,
+                "apikey": serviceRoleKey,
               },
               body: JSON.stringify({
                 source_endpoint_id: endpoint.id,

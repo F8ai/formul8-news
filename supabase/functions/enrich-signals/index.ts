@@ -65,17 +65,34 @@ function extractTopics(title: string, content: string): Array<{ slug: string; co
   const topics: Array<{ slug: string; confidence: number }> = [];
   
   const topicKeywords: Record<string, string[]> = {
-    "cannabis": ["cannabis", "marijuana", "weed", "hemp"],
-    "cbd": ["cbd", "cannabidiol"],
-    "thc": ["thc", "tetrahydrocannabinol"],
-    "medical-cannabis": ["medical marijuana", "medical cannabis", "therapeutic", "patient"],
-    "cannabis-regulation": ["regulation", "legal", "law", "policy", "compliance", "fda", "dea"],
-    "cannabis-cultivation": ["cultivation", "growing", "farm", "harvest", "grow"],
-    "cannabis-research": ["research", "study", "clinical", "trial", "science"],
-    "psychedelics": ["psychedelic", "psilocybin", "lsd", "mdma"],
-    "ai": ["artificial intelligence", "machine learning", "ai", "neural network"],
-    "healthcare": ["health", "medical", "medicine", "doctor", "hospital"],
-    "technology": ["technology", "tech", "software", "hardware"],
+    // Cannabis topics
+    "Cannabis": ["cannabis", "marijuana", "weed", "hemp"],
+    "CBD": ["cbd", "cannabidiol"],
+    "THC": ["thc", "tetrahydrocannabinol"],
+    "Medical Cannabis": ["medical marijuana", "medical cannabis", "therapeutic", "patient"],
+    "Cannabis Regulation": ["regulation", "legal", "law", "policy", "compliance", "fda", "dea"],
+    "Cannabis Cultivation": ["cultivation", "growing", "farm", "harvest", "grow"],
+    "Cannabis Research": ["research", "study", "clinical", "trial", "science"],
+    "Psychedelics": ["psychedelic", "psilocybin", "lsd", "mdma"],
+    "Cannabis Business": ["business", "market", "sales", "revenue", "company", "startup"],
+    "Cannabis Finance": ["investment", "funding", "ipo", "stock", "investor"],
+    
+    // AI topics
+    "Artificial Intelligence": ["artificial intelligence", "ai", "machine learning", "ml", "deep learning"],
+    "Large Language Models": ["llm", "gpt", "claude", "llama", "language model", "chatgpt", "gemini"],
+    "Computer Vision": ["computer vision", "image recognition", "object detection", "dall-e", "midjourney", "stable diffusion"],
+    "Machine Learning": ["machine learning", "ml", "neural network", "training", "model"],
+    "AI Tools": ["ai tool", "ai platform", "langchain", "hugging face", "pytorch", "tensorflow"],
+    "AI Models": ["ai model", "model release", "open source model", "foundation model"],
+    "AI Research": ["ai research", "paper", "arxiv", "conference", "neurips", "icml"],
+    "AI Ethics": ["ai ethics", "ai safety", "alignment", "bias", "fairness", "responsible ai"],
+    "AI Business": ["ai startup", "ai company", "ai funding", "ai market", "ai adoption"],
+    "Generative AI": ["generative ai", "text generation", "image generation", "video generation", "synthesis"],
+    "AI Infrastructure": ["gpu", "cloud computing", "inference", "training infrastructure", "nvidia", "compute"],
+    
+    // General topics
+    "Healthcare": ["health", "medical", "medicine", "doctor", "hospital"],
+    "Technology": ["technology", "tech", "software", "hardware"],
   };
   
   for (const [slug, keywords] of Object.entries(topicKeywords)) {
@@ -100,6 +117,11 @@ function extractEntities(text: string): Array<{ name: string; type: string }> {
   const terpenes = ["myrcene", "limonene", "pinene", "linalool", "caryophyllene"];
   const regulators = ["FDA", "DEA", "USDA", "state cannabis board"];
   
+  // AI-specific entities
+  const aiModels = ["GPT-4", "GPT-3", "Claude", "Llama", "Gemini", "DALL-E", "Midjourney", "Stable Diffusion"];
+  const aiCompanies = ["OpenAI", "Anthropic", "Google", "Meta", "Microsoft", "Hugging Face", "Cohere"];
+  const aiTools = ["LangChain", "PyTorch", "TensorFlow", "Keras", "Transformers"];
+  
   for (const cannabinoid of cannabinoids) {
     if (text.includes(cannabinoid)) {
       entities.push({ name: cannabinoid, type: "cannabinoid" });
@@ -115,6 +137,24 @@ function extractEntities(text: string): Array<{ name: string; type: string }> {
   for (const regulator of regulators) {
     if (text.includes(regulator)) {
       entities.push({ name: regulator, type: "regulator" });
+    }
+  }
+  
+  for (const model of aiModels) {
+    if (text.includes(model)) {
+      entities.push({ name: model, type: "ai_model" });
+    }
+  }
+  
+  for (const company of aiCompanies) {
+    if (text.includes(company)) {
+      entities.push({ name: company, type: "ai_company" });
+    }
+  }
+  
+  for (const tool of aiTools) {
+    if (text.includes(tool)) {
+      entities.push({ name: tool, type: "ai_tool" });
     }
   }
   
