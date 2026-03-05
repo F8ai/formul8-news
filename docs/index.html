@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formul8 News | AI & Cannabis Industry Intelligence</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
-    <meta name="description" content="Curated AI and cannabis industry news powered by Formul8">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -110,7 +109,7 @@
             top: 6rem;
         }
         
-        .sidebar-section {
+        .sidebar-header {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -122,88 +121,9 @@
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-        
-        .category-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border-radius: 8px;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-            cursor: pointer;
-            border: 1px solid transparent;
-        }
-        
-        .category-link:hover {
-            background: var(--bg-card-hover);
-            color: var(--primary-light);
-            border-color: var(--border-light);
-        }
-        
-        .category-link.active {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--primary-light);
-            border-color: var(--primary);
-            box-shadow: 0 0 15px var(--primary-glow);
-        }
-        
-        .category-link-text {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .category-badge {
-            background: var(--bg-dark);
-            color: var(--text-secondary);
-            padding: 0.125rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-        
-        .category-link.active .category-badge {
-            background: var(--primary);
-            color: var(--bg-dark);
-        }
-        
-        .main-content {
-            min-height: 100vh;
-        }
-        
-        .feed-header {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .feed-title {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-        
-        .feed-subtitle {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-        
-        .articles-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
         }
         
         .article-card {
@@ -212,6 +132,7 @@
             border-radius: 12px;
             overflow: hidden;
             transition: all 0.3s;
+            margin-bottom: 1.5rem;
         }
         
         .article-card:hover {
@@ -220,9 +141,15 @@
             transform: translateY(-2px);
         }
         
+        .article-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+        
         .article-header {
             padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
         }
         
         .article-type {
@@ -242,7 +169,7 @@
         }
         
         .article-title {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: 700;
             line-height: 1.4;
             margin-bottom: 0.75rem;
@@ -266,13 +193,11 @@
             flex-wrap: wrap;
         }
         
-        .article-body {
-            padding: 1.5rem;
-        }
-        
         .article-snippet {
             color: var(--text-secondary);
             line-height: 1.7;
+            font-size: 0.875rem;
+            margin-top: 0.75rem;
         }
         
         .article-footer {
@@ -350,33 +275,39 @@
     
     <div class="container">
         <div class="main-layout">
-            <!-- Left Sidebar: AI Categories -->
+            <!-- Left Sidebar: AI Articles -->
             <aside class="sidebar">
-                <div class="sidebar-section">
+                <div class="sidebar-header">
                     <h3 class="sidebar-title">🤖 AI Categories</h3>
-                    <div id="aiCategoryNav"></div>
+                </div>
+                <div id="aiArticles">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
                 </div>
             </aside>
             
-            <!-- Center: Main Feed -->
-            <main class="main-content">
-                <div class="feed-header">
-                    <h2 class="feed-title" id="feedTitle">Latest News</h2>
-                    <p class="feed-subtitle" id="feedSubtitle">All recent industry updates</p>
+            <!-- Center: Latest News -->
+            <main>
+                <div class="sidebar-header">
+                    <h3 class="sidebar-title">📰 Latest News</h3>
                 </div>
-                <div class="articles-list" id="articlesContainer">
+                <div id="latestArticles">
                     <div class="loading">
                         <div class="spinner"></div>
-                        <p>Loading news...</p>
                     </div>
                 </div>
             </main>
             
-            <!-- Right Sidebar: Cannabis Categories -->
+            <!-- Right Sidebar: Cannabis Articles -->
             <aside class="sidebar">
-                <div class="sidebar-section">
+                <div class="sidebar-header">
                     <h3 class="sidebar-title">🌿 Cannabis Categories</h3>
-                    <div id="cannabisCategoryNav"></div>
+                </div>
+                <div id="cannabisArticles">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -389,23 +320,53 @@
         
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        let allArticles = [];
-        let currentCategory = 'all';
+        const aiTopics = ['Large Language Models', 'Artificial Intelligence', 'AI Tools', 'AI Models', 'Computer Vision', 'Generative AI', 'AI Research', 'Machine Learning', 'AI Business', 'AI Ethics', 'AI Infrastructure'];
+        const cannabisTopics = ['Cannabis', 'Cannabis Business', 'Cannabis Finance', 'Medical Cannabis', 'Cannabis Research', 'CBD', 'THC', 'Cannabis Regulation', 'Cannabis Policy', 'Cannabis Cultivation', 'Cannabis Technology'];
         
-        const aiCategories = {
-            'Large Language Models': { icon: '🤖', topics: ['Large Language Models', 'Artificial Intelligence'] },
-            'AI Tools & Platforms': { icon: '🛠️', topics: ['AI Tools', 'AI Models', 'AI Infrastructure'] },
-            'Computer Vision': { icon: '👁️', topics: ['Computer Vision', 'Generative AI'] },
-            'AI Research': { icon: '🔬', topics: ['AI Research', 'Machine Learning'] },
-            'AI Business': { icon: '💼', topics: ['AI Business', 'AI Ethics'] }
-        };
+        function getImageUrl(article) {
+            // Generate a placeholder image based on article type and source
+            const hash = article.id.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0);
+            
+            const colors = ['10b981', '6366f1', 'f59e0b', 'ec4899', '8b5cf6'];
+            const color = colors[Math.abs(hash) % colors.length];
+            
+            return `https://via.placeholder.com/400x180/${color}/ffffff?text=${encodeURIComponent(article.source_name.substring(0, 20))}`;
+        }
         
-        const cannabisCategories = {
-            'Cannabis Business': { icon: '💼', topics: ['Cannabis', 'Cannabis Business', 'Cannabis Finance'] },
-            'Medical & Research': { icon: '🔬', topics: ['Medical Cannabis', 'Cannabis Research', 'CBD', 'THC'] },
-            'Regulation & Policy': { icon: '⚖️', topics: ['Cannabis Regulation', 'Cannabis Policy'] },
-            'Cultivation': { icon: '🌱', topics: ['Cannabis Cultivation', 'Cannabis Technology'] }
-        };
+        function renderArticleCard(article) {
+            const date = article.published_at ? new Date(article.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent';
+            const title = decodeHtml(article.title);
+            const source = decodeHtml(article.source_name);
+            const snippet = article.content_snippet ? decodeHtml(article.content_snippet).substring(0, 120) + '...' : '';
+            const imageUrl = getImageUrl(article);
+            
+            return `
+                <article class="article-card">
+                    <img src="${imageUrl}" alt="${title}" class="article-image" onerror="this.style.display='none'">
+                    <div class="article-header">
+                        <span class="article-type type-${article.type}">${article.type}</span>
+                        <h2 class="article-title">
+                            <a href="${article.url}" target="_blank">${title}</a>
+                        </h2>
+                        <div class="article-meta">
+                            <span>📅 ${date}</span>
+                            <span>📰 ${source}</span>
+                        </div>
+                        ${snippet ? `<p class="article-snippet">${snippet}</p>` : ''}
+                    </div>
+                    ${article.topics.length > 0 ? `
+                        <div class="article-footer">
+                            <div class="article-topics">
+                                ${article.topics.slice(0, 3).map(t => `<span class="topic-tag">${decodeHtml(t)}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </article>
+            `;
+        }
         
         async function loadArticles() {
             try {
@@ -417,135 +378,42 @@
                 
                 if (error) throw error;
                 
-                allArticles = articles.map(article => ({
+                const allArticles = articles.map(article => ({
                     ...article,
                     source_name: article.news_items?.[0]?.source_name || 'Unknown',
                     topics: article.signal_topics?.map(st => st.topics?.name).filter(Boolean) || []
                 }));
                 
-                renderCategoryNav();
-                displayArticles();
+                // Filter AI articles
+                const aiArticles = allArticles.filter(a => 
+                    a.topics.some(t => aiTopics.includes(t))
+                ).slice(0, 5);
+                
+                // Filter Cannabis articles
+                const cannabisArticles = allArticles.filter(a => 
+                    a.topics.some(t => cannabisTopics.includes(t))
+                ).slice(0, 5);
+                
+                // Latest articles (all)
+                const latestArticles = allArticles.slice(0, 10);
+                
+                // Render
+                document.getElementById('aiArticles').innerHTML = aiArticles.length > 0 
+                    ? aiArticles.map(renderArticleCard).join('') 
+                    : '<p style="text-align: center; color: var(--text-secondary);">No AI articles yet</p>';
+                
+                document.getElementById('cannabisArticles').innerHTML = cannabisArticles.length > 0 
+                    ? cannabisArticles.map(renderArticleCard).join('') 
+                    : '<p style="text-align: center; color: var(--text-secondary);">No cannabis articles yet</p>';
+                
+                document.getElementById('latestArticles').innerHTML = latestArticles.length > 0 
+                    ? latestArticles.map(renderArticleCard).join('') 
+                    : '<p style="text-align: center; color: var(--text-secondary);">No articles found</p>';
                 
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('articlesContainer').innerHTML = '<div class="loading"><p>⚠️ Failed to load articles</p></div>';
+                document.getElementById('latestArticles').innerHTML = '<div class="loading"><p>⚠️ Failed to load articles</p></div>';
             }
-        }
-        
-        function renderCategoryNav() {
-            // AI Categories
-            const aiNav = document.getElementById('aiCategoryNav');
-            const aiCounts = {};
-            Object.keys(aiCategories).forEach(cat => {
-                aiCounts[cat] = allArticles.filter(a => 
-                    a.topics.some(t => aiCategories[cat].topics.includes(t))
-                ).length;
-            });
-            
-            aiNav.innerHTML = `
-                <div class="category-link ${currentCategory === 'all' ? 'active' : ''}" onclick="selectCategory('all')">
-                    <span class="category-link-text">
-                        <span>📰</span>
-                        <span>All News</span>
-                    </span>
-                    <span class="category-badge">${allArticles.length}</span>
-                </div>
-                ${Object.entries(aiCategories).map(([cat, data]) => `
-                    <div class="category-link ${currentCategory === cat ? 'active' : ''}" onclick="selectCategory('${cat}')">
-                        <span class="category-link-text">
-                            <span>${data.icon}</span>
-                            <span>${cat}</span>
-                        </span>
-                        <span class="category-badge">${aiCounts[cat]}</span>
-                    </div>
-                `).join('')}
-            `;
-            
-            // Cannabis Categories
-            const cannabisNav = document.getElementById('cannabisCategoryNav');
-            const cannabisCounts = {};
-            Object.keys(cannabisCategories).forEach(cat => {
-                cannabisCounts[cat] = allArticles.filter(a => 
-                    a.topics.some(t => cannabisCategories[cat].topics.includes(t))
-                ).length;
-            });
-            
-            cannabisNav.innerHTML = Object.entries(cannabisCategories).map(([cat, data]) => `
-                <div class="category-link ${currentCategory === cat ? 'active' : ''}" onclick="selectCategory('${cat}')">
-                    <span class="category-link-text">
-                        <span>${data.icon}</span>
-                        <span>${cat}</span>
-                    </span>
-                    <span class="category-badge">${cannabisCounts[cat]}</span>
-                </div>
-            `).join('');
-        }
-        
-        function selectCategory(category) {
-            currentCategory = category;
-            renderCategoryNav();
-            displayArticles();
-            
-            const allCategories = { ...aiCategories, ...cannabisCategories };
-            const titles = {
-                'all': 'Latest News',
-                ...Object.fromEntries(Object.keys(allCategories).map(k => [k, `${allCategories[k].icon} ${k}`]))
-            };
-            
-            document.getElementById('feedTitle').textContent = titles[category] || 'Latest News';
-            document.getElementById('feedSubtitle').textContent = category === 'all' 
-                ? 'All recent industry updates' 
-                : `Latest ${category.toLowerCase()} news and updates`;
-        }
-        
-        function displayArticles() {
-            let filtered = allArticles;
-            
-            if (currentCategory !== 'all') {
-                const allCategories = { ...aiCategories, ...cannabisCategories };
-                if (allCategories[currentCategory]) {
-                    filtered = filtered.filter(a => 
-                        a.topics.some(t => allCategories[currentCategory].topics.includes(t))
-                    );
-                }
-            }
-            
-            const container = document.getElementById('articlesContainer');
-            
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="loading"><p>📰 No articles found</p></div>';
-                return;
-            }
-            
-            container.innerHTML = filtered.map(article => {
-                const date = article.published_at ? new Date(article.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown date';
-                const title = decodeHtml(article.title);
-                const source = decodeHtml(article.source_name);
-                const snippet = article.content_snippet ? decodeHtml(article.content_snippet) : '';
-                
-                return `
-                    <article class="article-card">
-                        <div class="article-header">
-                            <span class="article-type type-${article.type}">${article.type}</span>
-                            <h2 class="article-title">
-                                <a href="${article.url}" target="_blank">${title}</a>
-                            </h2>
-                            <div class="article-meta">
-                                <span>📅 ${date}</span>
-                                <span>📰 ${source}</span>
-                            </div>
-                        </div>
-                        ${snippet ? `<div class="article-body"><p class="article-snippet">${snippet}</p></div>` : ''}
-                        ${article.topics.length > 0 ? `
-                            <div class="article-footer">
-                                <div class="article-topics">
-                                    ${article.topics.map(t => `<span class="topic-tag">${decodeHtml(t)}</span>`).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-                    </article>
-                `;
-            }).join('');
         }
         
         function decodeHtml(text) {
