@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cannabis Industry News | Formul8</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
     <meta name="description" content="Curated cannabis industry news, research, and policy updates powered by Formul8">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -492,14 +493,14 @@
         const SUPABASE_URL = 'https://gptfmaceymhubyuhqegu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwdGZtYWNleW1odWJ5dWhxZWd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MzA1NzUsImV4cCI6MjA4ODMwNjU3NX0.BkohmTjlu9q0-Stu62EPj36fGoFlNXBGqFgaHAmiKhw';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let allArticles = [];
         let allSources = new Set();
         
         async function loadArticles() {
             try {
-                const { data: articles, error } = await supabase
+                const { data: articles, error } = await supabaseClient
                     .from('signal_items')
                     .select('id, type, title, url, published_at, content_snippet, created_at, news_items(source_name), signal_topics(topics(name))')
                     .order('created_at', { ascending: false })
