@@ -280,10 +280,8 @@
                 <div class="sidebar-header">
                     <h3 class="sidebar-title">🤖 AI Categories</h3>
                 </div>
-                <div id="aiArticles">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
+                <div id="aiArticles" class="loading">
+                    <div class="spinner"></div>
                 </div>
             </aside>
             
@@ -292,10 +290,8 @@
                 <div class="sidebar-header">
                     <h3 class="sidebar-title">📰 Latest News</h3>
                 </div>
-                <div id="latestArticles">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
+                <div id="latestArticles" class="loading">
+                    <div class="spinner"></div>
                 </div>
             </main>
             
@@ -304,10 +300,8 @@
                 <div class="sidebar-header">
                     <h3 class="sidebar-title">🌿 Cannabis Categories</h3>
                 </div>
-                <div id="cannabisArticles">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
+                <div id="cannabisArticles" class="loading">
+                    <div class="spinner"></div>
                 </div>
             </aside>
         </div>
@@ -397,22 +391,34 @@
                 // Latest articles (all)
                 const latestArticles = allArticles.slice(0, 10);
                 
-                // Render
-                document.getElementById('aiArticles').innerHTML = aiArticles.length > 0 
+                // Render - clear loading class first
+                const aiContainer = document.getElementById('aiArticles');
+                const cannabisContainer = document.getElementById('cannabisArticles');
+                const latestContainer = document.getElementById('latestArticles');
+                
+                aiContainer.className = '';
+                cannabisContainer.className = '';
+                latestContainer.className = '';
+                
+                aiContainer.innerHTML = aiArticles.length > 0 
                     ? aiArticles.map(renderArticleCard).join('') 
-                    : '<p style="text-align: center; color: var(--text-secondary);">No AI articles yet</p>';
+                    : '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No AI articles yet</p>';
                 
-                document.getElementById('cannabisArticles').innerHTML = cannabisArticles.length > 0 
+                cannabisContainer.innerHTML = cannabisArticles.length > 0 
                     ? cannabisArticles.map(renderArticleCard).join('') 
-                    : '<p style="text-align: center; color: var(--text-secondary);">No cannabis articles yet</p>';
+                    : '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No cannabis articles yet</p>';
                 
-                document.getElementById('latestArticles').innerHTML = latestArticles.length > 0 
+                latestContainer.innerHTML = latestArticles.length > 0 
                     ? latestArticles.map(renderArticleCard).join('') 
-                    : '<p style="text-align: center; color: var(--text-secondary);">No articles found</p>';
+                    : '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No articles found</p>';
                 
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('latestArticles').innerHTML = '<div class="loading"><p>⚠️ Failed to load articles</p></div>';
+                ['aiArticles', 'cannabisArticles', 'latestArticles'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.className = '';
+                    el.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">⚠️ Failed to load articles</p>';
+                });
             }
         }
         
