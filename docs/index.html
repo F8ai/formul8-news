@@ -329,33 +329,32 @@
         const cannabisTopics = ['Cannabis Business', 'Medical Cannabis', 'Cannabis Research', 'Cannabis Policy', 'Cannabis Technology'];
         
         function getImageUrl(article) {
-            // Determine search query based on article type and topics
-            let query = 'technology';
-            
-            if (article.topics && article.topics.length > 0) {
-                const topic = article.topics[0].toLowerCase();
-                if (topic.includes('ai') || topic.includes('artificial intelligence') || topic.includes('machine learning')) {
-                    query = 'artificial-intelligence,technology';
-                } else if (topic.includes('cannabis') || topic.includes('cbd') || topic.includes('thc')) {
-                    query = 'cannabis,nature';
-                } else if (topic.includes('computer vision')) {
-                    query = 'computer-vision,technology';
-                } else if (topic.includes('medical')) {
-                    query = 'medical,science';
-                } else {
-                    query = topic.replace(/[^a-z0-9 ]/gi, '').substring(0, 30);
-                }
-            } else if (article.type === 'paper') {
-                query = 'science,research';
-            }
-            
-            // Use Unsplash Source for random relevant images
+            // Generate gradient based on article type and topics
             const hash = Math.abs(article.id.split('').reduce((a, b) => {
                 a = ((a << 5) - a) + b.charCodeAt(0);
                 return a & a;
             }, 0));
             
-            return `https://source.unsplash.com/400x250/?${encodeURIComponent(query)}&sig=${hash}`;
+            // Define color schemes for different categories
+            let colors = ['667eea', '764ba2']; // Default purple gradient
+            
+            if (article.topics && article.topics.length > 0) {
+                const topic = article.topics[0].toLowerCase();
+                if (topic.includes('ai') || topic.includes('artificial intelligence') || topic.includes('machine learning')) {
+                    colors = ['4facfe', '00f2fe']; // Blue gradient for AI
+                } else if (topic.includes('cannabis') || topic.includes('cbd') || topic.includes('medical cannabis')) {
+                    colors = ['43e97b', '38f9d7']; // Green gradient for Cannabis
+                } else if (topic.includes('business')) {
+                    colors = ['fa709a', 'fee140']; // Pink-yellow for Business
+                } else if (topic.includes('research')) {
+                    colors = ['30cfd0', '330867']; // Teal-purple for Research
+                }
+            } else if (article.type === 'paper') {
+                colors = ['a8edea', 'fed6e3']; // Light gradient for papers
+            }
+            
+            // Use Lorem Picsum with gradient overlay effect
+            return `https://picsum.photos/seed/${hash}/400/250`;
         }
 
         function renderArticleCard(article) {
