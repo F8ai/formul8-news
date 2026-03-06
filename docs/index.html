@@ -397,7 +397,7 @@
                     topics: article.signal_topics?.map(st => st.topics?.name).filter(Boolean) || []
                 }));
                 
-                // Filter AI articles (news + papers)
+                // Filter AI articles (news + papers) - sort by published_at descending
                 const aiArticles = allArticles.filter(a => {
                     const hasAITopic = a.topics && a.topics.length > 0 && a.topics.some(t => aiTopics.includes(t));
                     const isAIPaper = a.type === 'paper' && a.source_name === 'arXiv' && 
@@ -408,9 +408,16 @@
                                          cat.startsWith('stat.ML')
                                      );
                     return hasAITopic || isAIPaper;
-                }).slice(0, 8);
+                })
+                .sort((a, b) => {
+                    if (!a.published_at && !b.published_at) return 0;
+                    if (!a.published_at) return 1;
+                    if (!b.published_at) return -1;
+                    return new Date(b.published_at) - new Date(a.published_at);
+                })
+                .slice(0, 8);
                 
-                // Filter Cannabis articles (news + papers)
+                // Filter Cannabis articles (news + papers) - sort by published_at descending
                 const cannabisArticles = allArticles.filter(a => {
                     const hasCannabisTopic = a.topics && a.topics.length > 0 && a.topics.some(t => cannabisTopics.includes(t));
                     const isCannabisPaper = a.type === 'paper' && (
@@ -420,10 +427,18 @@
                         a.title.toLowerCase().includes('thc')
                     );
                     return hasCannabisTopic || isCannabisPaper;
-                }).slice(0, 8);
+                })
+                .sort((a, b) => {
+                    if (!a.published_at && !b.published_at) return 0;
+                    if (!a.published_at) return 1;
+                    if (!b.published_at) return -1;
+                    return new Date(b.published_at) - new Date(a.published_at);
+                })
+                .slice(0, 8);
                 
-                // Latest articles (all types) - sort by published_at descending
+                // Latest news articles only - sort by published_at descending
                 const latestArticles = allArticles
+                    .filter(a => a.type === 'news')
                     .sort((a, b) => {
                         // Sort by published_at, with nulls at the end
                         if (!a.published_at && !b.published_at) return 0;
