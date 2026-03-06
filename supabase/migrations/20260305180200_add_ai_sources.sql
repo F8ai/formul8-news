@@ -46,15 +46,15 @@ WHERE s.name IN (
 );
 
 -- Add AI-specific topics to the topics table
-INSERT INTO topics (name, description) VALUES
-  ('Large Language Models', 'GPT, Claude, Llama, and other LLMs'),
-  ('Computer Vision', 'Image generation, recognition, and processing'),
-  ('Machine Learning', 'ML algorithms, training, and deployment'),
-  ('AI Tools', 'AI development tools, frameworks, and platforms'),
-  ('AI Models', 'New AI model releases and updates'),
-  ('AI Research', 'Academic AI research and papers'),
-  ('AI Ethics', 'AI safety, alignment, and ethical considerations'),
-  ('AI Business', 'AI startups, funding, and market trends'),
-  ('Generative AI', 'Text, image, video, and audio generation'),
-  ('AI Infrastructure', 'GPU, cloud, and compute for AI')
+INSERT INTO topics (slug, name, description) VALUES
+  ('large-language-models', 'Large Language Models', 'GPT, Claude, Llama, and other LLMs'),
+  ('computer-vision', 'Computer Vision', 'Image generation, recognition, and processing'),
+  ('machine-learning', 'Machine Learning', 'ML algorithms, training, and deployment'),
+  ('ai-tools', 'AI Tools', 'AI development tools, frameworks, and platforms'),
+  ('ai-models', 'AI Models', 'New AI model releases and updates'),
+  ('ai-research', 'AI Research', 'Academic AI research and papers'),
+  ('ai-ethics', 'AI Ethics', 'AI safety, alignment, and ethical considerations'),
+  ('ai-business', 'AI Business', 'AI startups, funding, and market trends'),
+  ('generative-ai', 'Generative AI', 'Text, image, video, and audio generation'),
+  ('ai-infrastructure', 'AI Infrastructure', 'GPU, cloud, and compute for AI')
 ON CONFLICT (name) DO NOTHING;

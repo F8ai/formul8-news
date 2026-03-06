@@ -5,12 +5,11 @@
 UPDATE source_endpoints
 SET 
   auth_config = jsonb_set(
-    auth_config,
-    '{search_query}',
-    '"(cannabis[Title/Abstract] OR cannabidiol[Title/Abstract] OR CBD[Title/Abstract] OR THC[Title/Abstract] OR marijuana[Title/Abstract] OR cannabinoid[Title/Abstract]) AND (2026[PDAT])"'::jsonb
-  ),
-  auth_config = jsonb_set(
-    auth_config,
+    jsonb_set(
+      auth_config,
+      '{search_query}',
+      '"(cannabis[Title/Abstract] OR cannabidiol[Title/Abstract] OR CBD[Title/Abstract] OR THC[Title/Abstract] OR marijuana[Title/Abstract] OR cannabinoid[Title/Abstract]) AND (2026[PDAT])"'::jsonb
+    ),
     '{max_results}',
     '500'::jsonb
   ),

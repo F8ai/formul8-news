@@ -75,6 +75,69 @@ function parsePubMedXML(xmlText: string): any[] {
   
   return papers;
 }
+// Parse arXiv Atom feed response
+function parseArXivAtom(atomText: string): any[] {
+  const papers: any[] = [];
+
+  // Parse arXiv Atom feed entries
+  const entryMatches = atomText.matchAll(/<entry>([\s\S]*?)<\/entry>/g);
+
+  for (const match of entryMatches) {
+    const entryXml = match[1];
+
+    // Extract arXiv ID from the id field
+    const idMatch = entryXml.match(/<id>http:\/\/arxiv\.org\/abs\/([^<]+)<\/id>/);
+    const arxivId = idMatch?.[1];
+
+    // Extract DOI if available
+    const doiMatch = entryXml.match(/<arxiv:doi[^>]*>([^<]+)<\/arxiv:doi>/);
+    const doi = doiMatch?.[1];
+
+    const title = entryXml.match(/<title>([^<]+)<\/title>/)?.[1]?.trim();
+    const summary = entryXml.match(/<summary>([^<]+)<\/summary>/)?.[1]?.trim();
+
+    // Extract published date
+    const publishedMatch = entryXml.match(/<published>(\d{4}-\d{2}-\d{2})/);
+    const publishedDate = publishedMatch?.[1];
+
+    // Extract updated date
+    const updatedMatch = entryXml.match(/<updated>(\d{4}-\d{2}-\d{2})/);
+    const updatedDate = updatedMatch?.[1];
+
+    // Extract authors
+    const authorMatches = entryXml.matchAll(/<author>\s*<name>([^<]+)<\/name>/g);
+    const authors: string[] = [];
+    for (const authorMatch of authorMatches) {
+      authors.push(authorMatch[1].trim());
+    }
+
+    // Extract categories
+    const categoryMatches = entryXml.matchAll(/<category[^>]+term="([^"]+)"/g);
+    const categories: string[] = [];
+    for (const catMatch of categoryMatches) {
+      categories.push(catMatch[1]);
+    }
+
+    // Extract PDF link
+    const pdfLinkMatch = entryXml.match(/<link[^>]+title="pdf"[^>]+href="([^"]+)"/);
+    const pdfUrl = pdfLinkMatch?.[1];
+
+    papers.push({
+      arxivId,
+      doi,
+      title,
+      abstract: summary,
+      authors,
+      categories,
+      publishedDate,
+      updatedDate,
+      pdfUrl,
+      isOpenAccess: true, // All arXiv papers are open access
+    });
+  }
+
+  return papers;
+}
 
 function getMonthNumber(monthName: string): string {
   const months: { [key: string]: string } = {
@@ -122,99 +185,151 @@ serve(async (req) => {
       throw new Error(`Endpoint not found: ${endpointError?.message}`);
     }
 
-    // Get API credentials from auth_config
+    // Get API credentials from auth_config (optional for PubMed)
     const authConfig = endpoint.auth_config || {};
-    const apiKey = authConfig.api_key || Deno.env.get("LITERATURE_API_KEY");
-
-    if (!apiKey) {
-      throw new Error("Literature API key not configured");
-    }
+    const apiKey = authConfig.api_key || Deno.env.get("LITERATURE_API_KEY") || null;
 
     let items_processed = 0;
     let items_created = 0;
     let full_text_downloaded = 0;
     const errors: Array<{ doi: string; error: string }> = [];
 
-    // PubMed E-utilities API integration
     const searchQuery = search_query || authConfig.search_query || "(cannabis[Title/Abstract] OR cannabidiol[Title/Abstract] OR CBD[Title/Abstract])";
     const maxResults = authConfig.max_results || 100;
     
-    // Step 1: Search PubMed for article IDs
-    const searchParams = new URLSearchParams({
-      db: "pubmed",
-      term: searchQuery,
-      retmax: maxResults.toString(),
-      retmode: "json",
-      sort: "pub_date",
-      ...(apiKey && { api_key: apiKey }),
-      ...(from_date && { mindate: from_date.replace(/-/g, "/"), maxdate: new Date().toISOString().split("T")[0].replace(/-/g, "/") }),
-    });
-
-    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?${searchParams}`;
+    let papers = [];
     
-    try {
-      const searchResponse = await fetch(searchUrl);
-      if (!searchResponse.ok) {
-        throw new Error(`PubMed search failed: ${searchResponse.status}`);
-      }
+    // Determine API type based on endpoint URL
+    const isArXiv = endpoint.endpoint_url.includes('arxiv.org');
+    const isPubMed = endpoint.endpoint_url.includes('ncbi.nlm.nih.gov');
+    
+    if (isArXiv) {
+      // arXiv API integration
+      const arxivParams = new URLSearchParams({
+        search_query: searchQuery,
+        max_results: maxResults.toString(),
+        sortBy: authConfig.sort_by || 'submittedDate',
+        sortOrder: authConfig.sort_order || 'descending',
+      });
 
-      const searchData = await searchResponse.json();
-      const pmids = searchData.esearchresult?.idlist || [];
-
-      if (pmids.length === 0) {
-        console.log("No new articles found");
-        return new Response(JSON.stringify({
-          items_processed: 0,
-          items_created: 0,
-          full_text_downloaded: 0,
-          errors: [],
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        });
-      }
-
-      // Step 2: Fetch article details in batches
-      const batchSize = 200;
-      const papers = [];
-
-      for (let i = 0; i < pmids.length; i += batchSize) {
-        const batchPmids = pmids.slice(i, i + batchSize);
-        const fetchParams = new URLSearchParams({
-          db: "pubmed",
-          id: batchPmids.join(","),
-          retmode: "xml",
-          ...(apiKey && { api_key: apiKey }),
-        });
-
-        const fetchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?${fetchParams}`;
-        const fetchResponse = await fetch(fetchUrl);
-        
-        if (!fetchResponse.ok) {
-          console.warn(`Failed to fetch batch starting at ${i}`);
-          continue;
+      const arxivUrl = `${endpoint.endpoint_url}?${arxivParams}`;
+      
+      try {
+        const arxivResponse = await fetch(arxivUrl);
+        if (!arxivResponse.ok) {
+          throw new Error(`arXiv API failed: ${arxivResponse.status}`);
         }
 
-        const xmlText = await fetchResponse.text();
-        const parsedPapers = parsePubMedXML(xmlText);
-        papers.push(...parsedPapers);
+        const atomText = await arxivResponse.text();
+        papers = parseArXivAtom(atomText);
 
-        // Rate limiting: wait 0.34s between requests (max 3 requests/second without API key)
-        if (i + batchSize < pmids.length) {
-          await new Promise(resolve => setTimeout(resolve, apiKey ? 100 : 340));
+        if (papers.length === 0) {
+          console.log("No new arXiv papers found");
+          return new Response(JSON.stringify({
+            items_processed: 0,
+            items_created: 0,
+            full_text_downloaded: 0,
+            errors: [],
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
         }
+
+        // Rate limiting: arXiv recommends 3 seconds between requests
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+      } catch (apiError) {
+        throw new Error(`arXiv API error: ${(apiError as Error).message}`);
       }
+      
+    } else if (isPubMed) {
+      // PubMed E-utilities API integration
+      // Step 1: Search PubMed for article IDs
+      const searchParams = new URLSearchParams({
+        db: "pubmed",
+        term: searchQuery,
+        retmax: maxResults.toString(),
+        retmode: "json",
+        sort: "pub_date",
+        ...(apiKey && { api_key: apiKey }),
+        ...(from_date && { mindate: from_date.replace(/-/g, "/"), maxdate: new Date().toISOString().split("T")[0].replace(/-/g, "/") }),
+      });
 
-      for (const paper of papers) {
-        items_processed++;
+      const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?${searchParams}`;
+      
+      try {
+        const searchResponse = await fetch(searchUrl);
+        if (!searchResponse.ok) {
+          throw new Error(`PubMed search failed: ${searchResponse.status}`);
+        }
 
-        try {
-          const { doi, pmid, title, abstract, authors, journal, publishedDate, isOpenAccess, pmcId } = paper;
+        const searchData = await searchResponse.json();
+        const pmids = searchData.esearchresult?.idlist || [];
 
-          if (!title || !pmid) {
-            errors.push({ doi: doi || pmid || "unknown", error: "Missing required fields" });
+        if (pmids.length === 0) {
+          console.log("No new articles found");
+          return new Response(JSON.stringify({
+            items_processed: 0,
+            items_created: 0,
+            full_text_downloaded: 0,
+            errors: [],
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
+        }
+
+        // Step 2: Fetch article details in batches
+        const batchSize = 200;
+
+        for (let i = 0; i < pmids.length; i += batchSize) {
+          const batchPmids = pmids.slice(i, i + batchSize);
+          const fetchParams = new URLSearchParams({
+            db: "pubmed",
+            id: batchPmids.join(","),
+            retmode: "xml",
+            ...(apiKey && { api_key: apiKey }),
+          });
+
+          const fetchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?${fetchParams}`;
+          const fetchResponse = await fetch(fetchUrl);
+          
+          if (!fetchResponse.ok) {
+            console.warn(`Failed to fetch batch starting at ${i}`);
             continue;
           }
+
+          const xmlText = await fetchResponse.text();
+          const parsedPapers = parsePubMedXML(xmlText);
+          papers.push(...parsedPapers);
+
+          // Rate limiting: wait 0.34s between requests (max 3 requests/second without API key)
+          if (i + batchSize < pmids.length) {
+            await new Promise(resolve => setTimeout(resolve, apiKey ? 100 : 340));
+          }
+        }
+
+      } catch (apiError) {
+        throw new Error(`PubMed API error: ${(apiError as Error).message}`);
+      }
+    } else {
+      throw new Error(`Unsupported literature API: ${endpoint.endpoint_url}`);
+    }
+
+    // Process papers (common for both arXiv and PubMed)
+    for (const paper of papers) {
+      items_processed++;
+
+      try {
+        // Handle both arXiv and PubMed paper formats
+        const { doi, pmid, arxivId, title, abstract, authors, journal, categories, publishedDate, isOpenAccess, pmcId, pdfUrl } = paper;
+        const itemId = arxivId || pmid || doi;
+
+        if (!title || !itemId) {
+          errors.push({ doi: itemId || "unknown", error: "Missing required fields" });
+          continue;
+        }
 
           // Compute content fingerprint for deduplication
           const normalizedContent = `${title} ${abstract}`.toLowerCase().trim().replace(/\s+/g, " ");
@@ -236,27 +351,39 @@ serve(async (req) => {
               ingest_run_id,
               signal_item_id: existingFingerprint.signal_item_id,
               event_type: "duplicate",
-              item_identifier: doi || pmid,
+              item_identifier: itemId,
             });
             continue;
           }
 
-          // Apply license policy
-          const licensePolicy = endpoint.sources.license_policy;
-          let content_snippet = abstract?.substring(0, 500);
-          let fullTextPath = null;
+        // Apply license policy
+        const licensePolicy = endpoint.sources.license_policy;
+        let content_snippet = abstract?.substring(0, licensePolicy.snippet_length || 500);
+        let fullTextPath = null;
 
-          // Download full text if open access and policy allows
-          if (isOpenAccess && pmcId && licensePolicy.mode === "store_full_text_allowed") {
-            try {
-              // PubMed Central full text URL
-              const fullTextUrl = `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcId}/pdf/`;
+        // Download full text if open access and policy allows
+        if (isOpenAccess && licensePolicy.mode === "store_full_text_allowed") {
+          try {
+            let fullTextUrl = null;
+            let itemHash = null;
+            
+            // Determine full text URL based on source
+            if (pdfUrl) {
+              // arXiv PDF
+              fullTextUrl = pdfUrl;
+              itemHash = arxivId?.replace(/[^a-zA-Z0-9]/g, "_");
+            } else if (pmcId) {
+              // PubMed Central full text
+              fullTextUrl = `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcId}/pdf/`;
+              itemHash = pmid?.replace(/[^a-zA-Z0-9]/g, "_");
+            }
+            
+            if (fullTextUrl && itemHash) {
               const fullTextResponse = await fetch(fullTextUrl);
               
               if (fullTextResponse.ok) {
                 const fullTextContent = await fullTextResponse.arrayBuffer();
-                const pmidHash = pmid.replace(/[^a-zA-Z0-9]/g, "_");
-                fullTextPath = `literature/${endpoint.source_id}/${pmidHash}/fulltext.pdf`;
+                fullTextPath = `literature/${endpoint.source_id}/${itemHash}/fulltext.pdf`;
 
                 await supabaseClient.storage
                   .from("raw-artifacts")
@@ -267,19 +394,26 @@ serve(async (req) => {
 
                 full_text_downloaded++;
               }
-            } catch (fullTextError) {
-              console.warn(`Failed to download full text for PMID ${pmid}: ${fullTextError}`);
             }
+          } catch (fullTextError) {
+            console.warn(`Failed to download full text for ${itemId}: ${fullTextError}`);
           }
+        }
 
-          // Create signal_item
-          const { data: signalItem, error: signalError } = await supabaseClient
-            .from("signal_items")
-            .insert({
-              type: "paper",
-              title,
-              url: doi ? `https://doi.org/${doi}` : `https://pubmed.ncbi.nlm.nih.gov/${pmid}`,
-              published_at: publishedDate,
+        // Create signal_item
+        const paperUrl = arxivId 
+          ? `https://arxiv.org/abs/${arxivId}`
+          : doi 
+            ? `https://doi.org/${doi}` 
+            : `https://pubmed.ncbi.nlm.nih.gov/${pmid}`;
+            
+        const { data: signalItem, error: signalError } = await supabaseClient
+          .from("signal_items")
+          .insert({
+            type: "paper",
+            title,
+            url: paperUrl,
+            published_at: publishedDate,
               content_snippet,
             })
             .select()
@@ -290,16 +424,24 @@ serve(async (req) => {
             continue;
           }
 
-          // Create paper_item
-          await supabaseClient.from("paper_items").insert({
+          // Create paper_item with arXiv-specific fields
+          const paperData: any = {
             signal_item_id: signalItem.id,
             doi,
             abstract,
             authors: authors || [],
-            journal,
-            citation_count: 0, // PubMed doesn't provide citation counts directly
+            journal: journal || (categories ? `arXiv:${categories[0]}` : null),
+            citation_count: 0,
             is_open_access: isOpenAccess,
-          });
+          };
+          
+          // Add arXiv-specific fields if present
+          if (arxivId) {
+            paperData.arxiv_id = arxivId;
+            paperData.arxiv_categories = categories || [];
+          }
+          
+          await supabaseClient.from("paper_items").insert(paperData);
 
           // Create provenance_record
           await supabaseClient.from("provenance_records").insert({
@@ -317,26 +459,22 @@ serve(async (req) => {
             fingerprint_hash,
           });
 
-          // Log created event
-          await supabaseClient.from("ingest_item_events").insert({
-            ingest_run_id,
-            signal_item_id: signalItem.id,
-            event_type: "created",
-            item_identifier: doi || pmid,
-          });
+        // Log created event
+        await supabaseClient.from("ingest_item_events").insert({
+          ingest_run_id,
+          signal_item_id: signalItem.id,
+          event_type: "created",
+          item_identifier: itemId,
+        });
 
-          items_created++;
+        items_created++;
 
-        } catch (paperError) {
-          errors.push({ 
-            doi: paper.doi || paper.pmid || "unknown", 
-            error: (paperError as Error).message 
-          });
-        }
+      } catch (paperError) {
+        errors.push({ 
+          doi: paper.doi || paper.pmid || paper.arxivId || "unknown", 
+          error: (paperError as Error).message 
+        });
       }
-
-    } catch (apiError) {
-      throw new Error(`Literature API error: ${(apiError as Error).message}`);
     }
 
     const response: LiteratureIngestResponse = {

@@ -1,0 +1,132 @@
+#!/usr/bin/env node
+
+import { createClient } from '@supabase/supabase-js';
+import { config } from 'dotenv';
+
+config({ path: '.env.local' });
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function testArXivIngestion() {
+  console.log('Testing arXiv ingestion...\n');
+
+  // Get arXiv endpoints
+  const { data: endpoints, error: endpointsError } = await supabase
+    .from('source_endpoints')
+    .select('id, name, endpoint_url, auth_config, sources(id, name)')
+    .eq('name', 'arXiv API');
+
+  if (endpointsError || !endpoints || endpoints.length === 0) {
+    console.error('Error fetching arXiv endpoints:', endpointsError);
+    return;
+  }
+
+  console.log(`Found ${endpoints.length} arXiv endpoints\n`);
+
+  for (const endpoint of endpoints) {
+    console.log(`\n📚 Testing ${endpoint.sources.name}...`);
+    console.log(`   Query: ${endpoint.auth_config.search_query}`);
+
+    // Create ingest run
+    const { data: ingestRun, error: runError } = await supabase
+      .from('ingest_runs')
+      .insert({
+        source_id: endpoint.sources.id,
+        status: 'running',
+        started_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (runError || !ingestRun) {
+      console.error('Error creating ingest run:', runError);
+      continue;
+    }
+
+    console.log(`   Ingest run ID: ${ingestRun.id}`);
+
+    // Call ingest-literature function
+    try {
+      const { data, error } = await supabase.functions.invoke('ingest-literature', {
+        body: {
+          source_endpoint_id: endpoint.id,
+          ingest_run_id: ingestRun.id,
+        },
+      });
+
+      if (error) {
+        console.error('   ❌ Ingestion error:', error);
+        
+        // Update run status to failed
+        await supabase
+          .from('ingest_runs')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+            error_message: error.message,
+          })
+          .eq('id', ingestRun.id);
+      } else {
+        console.log('   ✅ Ingestion successful!');
+        console.log(`   - Items processed: ${data.items_processed}`);
+        console.log(`   - Items created: ${data.items_created}`);
+        console.log(`   - Full text downloaded: ${data.full_text_downloaded}`);
+        
+        if (data.errors && data.errors.length > 0) {
+          console.log(`   - Errors: ${data.errors.length}`);
+          data.errors.slice(0, 3).forEach(err => {
+            console.log(`     • ${err.doi}: ${err.error}`);
+          });
+        }
+
+        // Update run status to completed
+        await supabase
+          .from('ingest_runs')
+          .update({
+            status: 'completed',
+            completed_at: new Date().toISOString(),
+            items_processed: data.items_processed,
+            items_created: data.items_created,
+          })
+          .eq('id', ingestRun.id);
+      }
+    } catch (err) {
+      console.error('   ❌ Function invocation error:', err);
+    }
+  }
+
+  // Show sample of ingested papers
+  console.log('\n\n📄 Sample of ingested arXiv papers:');
+  const { data: papers, error: papersError } = await supabase
+    .from('paper_items')
+    .select('arxiv_id, arxiv_categories, signal_items(title, url, published_at)')
+    .not('arxiv_id', 'is', null)
+    .order('signal_items(published_at)', { ascending: false })
+    .limit(5);
+
+  if (papersError) {
+    console.error('Error fetching papers:', papersError);
+  } else if (papers && papers.length > 0) {
+    papers.forEach((paper, idx) => {
+      console.log(`\n${idx + 1}. ${paper.signal_items.title}`);
+      console.log(`   arXiv: ${paper.arxiv_id}`);
+      console.log(`   Categories: ${paper.arxiv_categories?.join(', ')}`);
+      console.log(`   URL: ${paper.signal_items.url}`);
+      console.log(`   Published: ${paper.signal_items.published_at}`);
+    });
+  } else {
+    console.log('No arXiv papers found yet.');
+  }
+
+  console.log('\n✅ Test complete!');
+}
+
+testArXivIngestion().catch(console.error);

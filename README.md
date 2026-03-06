@@ -87,6 +87,16 @@ Track cannabis research articles from PubMed automatically:
 
 This sets up automatic ingestion of cannabis-related research papers every 6 hours. See [PUBMED_SETUP.md](PUBMED_SETUP.md) for detailed configuration options.
 
+#### Historical Backfill
+
+Get ALL cannabis research articles from PubMed's entire history:
+
+```bash
+./backfill-pubmed.sh
+```
+
+Choose from preset ranges (2020-2025, 2015-2025, 2000-2025, or 1970-2025) or specify custom years. See [PUBMED_BACKFILL.md](PUBMED_BACKFILL.md) for details.
+
 ### Database Schema
 
 See `supabase/migrations/` for the complete schema including:

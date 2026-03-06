@@ -31,7 +31,8 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { source_endpoint_id, mode }: OrchestratorRequest = await req.json();
+    const requestBody = await req.json().catch(() => ({}));
+    const { source_endpoint_id, mode = "streaming" }: OrchestratorRequest = requestBody;
 
     // Query active endpoints
     let query = supabaseClient
