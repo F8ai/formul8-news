@@ -141,12 +141,7 @@
             transform: translateY(-2px);
         }
         
-        .article-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-        }
+        /* .article-image removed - no images for now */
         
         .article-header {
             padding: 1.5rem;
@@ -352,7 +347,7 @@
         
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        const aiTopics = ['AI Research', 'AI Business', 'Machine Learning', 'Generative AI', 'AI Ethics'];
+        const aiTopics = ['AI Research', 'AI Business', 'Machine Learning', 'Generative AI', 'AI Ethics', 'Artificial Intelligence', 'Large Language Models', 'Computer Vision'];
         const cannabisTopics = ['Cannabis Business', 'Medical Cannabis', 'Cannabis Research', 'Cannabis Policy', 'Cannabis Technology'];
         
         function getImageUrl(article) {
