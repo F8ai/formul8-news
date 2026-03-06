@@ -390,8 +390,8 @@
                 const allArticles = articles.map(article => ({
                     ...article,
                     source_name: article.news_items?.[0]?.source_name || 
-                                 article.paper_items?.[0]?.journal ||
-                                 (article.paper_items?.[0]?.arxiv_id ? 'arXiv' : 'Unknown'),
+                                 (article.paper_items?.[0]?.arxiv_id ? 'arXiv' : article.paper_items?.[0]?.journal) ||
+                                 'Unknown',
                     arxiv_categories: article.paper_items?.[0]?.arxiv_categories || [],
                     topics: article.signal_topics?.map(st => st.topics?.name).filter(Boolean) || []
                 }));
