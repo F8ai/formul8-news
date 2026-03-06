@@ -449,8 +449,23 @@
                     topics: article.signal_topics?.map(st => st.topics?.name).filter(Boolean) || []
                 }));
                 
-                // Filter AI articles (news + papers) - sort by published_at descending
+                // Filter AI articles (news + papers) - exclude cannabis articles - sort by published_at descending
                 const aiArticles = allArticles.filter(a => {
+                    // First check if it's a cannabis article (exclude these)
+                    const hasCannabisTopic = a.topics && a.topics.length > 0 && a.topics.some(t => cannabisTopics.includes(t));
+                    const isCannabisPaper = a.type === 'paper' && (
+                        a.title.toLowerCase().includes('cannabis') ||
+                        a.title.toLowerCase().includes('cannabinoid') ||
+                        a.title.toLowerCase().includes('marijuana') ||
+                        a.title.toLowerCase().includes('cbd') ||
+                        a.title.toLowerCase().includes('thc')
+                    );
+                    
+                    if (hasCannabisTopic || isCannabisPaper) {
+                        return false; // Exclude cannabis articles from AI panel
+                    }
+                    
+                    // Then check if it's an AI article
                     const hasAITopic = a.topics && a.topics.length > 0 && a.topics.some(t => aiTopics.includes(t));
                     const isAIPaper = a.type === 'paper' && a.source_name === 'arXiv' && 
                                      a.arxiv_categories && a.arxiv_categories.length > 0 &&
