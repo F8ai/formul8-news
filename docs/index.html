@@ -329,18 +329,35 @@
         const cannabisTopics = ['Cannabis', 'Cannabis Business', 'Cannabis Finance', 'Medical Cannabis', 'Cannabis Research', 'CBD', 'THC', 'Cannabis Regulation', 'Cannabis Policy', 'Cannabis Cultivation', 'Cannabis Technology'];
         
         function getImageUrl(article) {
-            // Generate a placeholder image based on article type and source
-            const hash = article.id.split('').reduce((a, b) => {
+            // Determine search query based on article type and topics
+            let query = 'technology';
+            
+            if (article.topics && article.topics.length > 0) {
+                const topic = article.topics[0].toLowerCase();
+                if (topic.includes('ai') || topic.includes('artificial intelligence') || topic.includes('machine learning')) {
+                    query = 'artificial-intelligence,technology';
+                } else if (topic.includes('cannabis') || topic.includes('cbd') || topic.includes('thc')) {
+                    query = 'cannabis,nature';
+                } else if (topic.includes('computer vision')) {
+                    query = 'computer-vision,technology';
+                } else if (topic.includes('medical')) {
+                    query = 'medical,science';
+                } else {
+                    query = topic.replace(/[^a-z0-9 ]/gi, '').substring(0, 30);
+                }
+            } else if (article.type === 'paper') {
+                query = 'science,research';
+            }
+            
+            // Use Unsplash Source for random relevant images
+            const hash = Math.abs(article.id.split('').reduce((a, b) => {
                 a = ((a << 5) - a) + b.charCodeAt(0);
                 return a & a;
-            }, 0);
+            }, 0));
             
-            const colors = ['10b981', '6366f1', 'f59e0b', 'ec4899', '8b5cf6'];
-            const color = colors[Math.abs(hash) % colors.length];
-            
-            return `https://via.placeholder.com/400x180/${color}/ffffff?text=${encodeURIComponent(article.source_name.substring(0, 20))}`;
+            return `https://source.unsplash.com/400x250/?${encodeURIComponent(query)}&sig=${hash}`;
         }
-        
+
         function renderArticleCard(article) {
             const date = article.published_at ? new Date(article.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent';
             const title = decodeHtml(article.title);
