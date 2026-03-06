@@ -413,7 +413,7 @@
             const title = decodeHtml(article.title);
             const source = decodeHtml(article.source_name);
             const snippet = article.content_snippet ? decodeHtml(article.content_snippet).substring(0, 120) + '...' : '';
-            const imageUrl = getImageUrl(article);
+            // const imageUrl = getImageUrl(article); // Removed - will use RSS images later
             
             return `
                 <article class="article-card">
