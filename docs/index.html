@@ -428,7 +428,7 @@
                             <span>📰 ${source}</span>
                         </div>
                         ${snippet ? `<p class="article-snippet">${snippet}</p>` : ''}
-                        <a href="https://chat.formul8.ai?context=${encodeURIComponent(JSON.stringify({title: title, url: article.url, source: source, snippet: snippet}))}" target="_blank" class="ask-formul8-btn">
+                        <a href="https://chat.formul8.ai?article=${encodeURIComponent(article.url)}&title=${encodeURIComponent(title)}" target="_blank" class="ask-formul8-btn">
                             <span>💬</span>
                             <span>Ask Formul8</span>
                         </a>
