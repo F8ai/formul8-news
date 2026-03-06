@@ -168,6 +168,16 @@
             color: #818cf8;
         }
         
+        .type-paper {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+        }
+        
+        .type-patent {
+            background: rgba(245, 158, 11, 0.1);
+            color: #fbbf24;
+        }
+        
         .article-title {
             font-size: 1.1rem;
             font-weight: 700;
@@ -366,7 +376,12 @@
             try {
                 const { data: articles, error } = await supabaseClient
                     .from('signal_items')
-                    .select('id, type, title, url, published_at, content_snippet, created_at, news_items(source_name), signal_topics(topics(name))')
+                    .select(`
+                        id, type, title, url, published_at, content_snippet, created_at,
+                        news_items(source_name),
+                        paper_items(journal, arxiv_id, arxiv_categories),
+                        signal_topics(topics(name))
+                    `)
                     .order('created_at', { ascending: false })
                     .limit(100);
                 
@@ -374,24 +389,42 @@
                 
                 const allArticles = articles.map(article => ({
                     ...article,
-                    source_name: article.news_items?.[0]?.source_name || 'Unknown',
+                    source_name: article.news_items?.[0]?.source_name || 
+                                 article.paper_items?.[0]?.journal ||
+                                 (article.paper_items?.[0]?.arxiv_id ? 'arXiv' : 'Unknown'),
+                    arxiv_categories: article.paper_items?.[0]?.arxiv_categories || [],
                     topics: article.signal_topics?.map(st => st.topics?.name).filter(Boolean) || []
                 }));
                 
-                // Filter AI articles
-                const aiArticles = allArticles.filter(a => 
-                    a.topics.some(t => aiTopics.includes(t))
-                ).slice(0, 5);
+                // Filter AI articles (news + papers)
+                const aiArticles = allArticles.filter(a => {
+                    const hasAITopic = a.topics && a.topics.length > 0 && a.topics.some(t => aiTopics.includes(t));
+                    const isAIPaper = a.type === 'paper' && a.source_name === 'arXiv' && 
+                                     a.arxiv_categories && a.arxiv_categories.length > 0 &&
+                                     a.arxiv_categories.some(cat => 
+                                         cat.startsWith('cs.AI') || cat.startsWith('cs.LG') || 
+                                         cat.startsWith('cs.CL') || cat.startsWith('cs.CV') || 
+                                         cat.startsWith('stat.ML')
+                                     );
+                    return hasAITopic || isAIPaper;
+                }).slice(0, 8);
                 
-                // Filter Cannabis articles
-                const cannabisArticles = allArticles.filter(a => 
-                    a.topics.some(t => cannabisTopics.includes(t))
-                ).slice(0, 5);
+                // Filter Cannabis articles (news + papers)
+                const cannabisArticles = allArticles.filter(a => {
+                    const hasCannabisTopic = a.topics && a.topics.length > 0 && a.topics.some(t => cannabisTopics.includes(t));
+                    const isCannabisPaper = a.type === 'paper' && (
+                        a.title.toLowerCase().includes('cannabis') ||
+                        a.title.toLowerCase().includes('cannabinoid') ||
+                        a.title.toLowerCase().includes('cbd') ||
+                        a.title.toLowerCase().includes('thc')
+                    );
+                    return hasCannabisTopic || isCannabisPaper;
+                }).slice(0, 8);
                 
-                // Latest articles (all)
+                // Latest articles (all types)
                 const latestArticles = allArticles.slice(0, 10);
                 
-                // Render - clear loading class first
+                // Render
                 const aiContainer = document.getElementById('aiArticles');
                 const cannabisContainer = document.getElementById('cannabisArticles');
                 const latestContainer = document.getElementById('latestArticles');
@@ -402,11 +435,11 @@
                 
                 aiContainer.innerHTML = aiArticles.length > 0 
                     ? aiArticles.map(renderArticleCard).join('') 
-                    : '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No AI articles yet</p>';
+                    : '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No AI content yet</p>';
                 
                 cannabisContainer.innerHTML = cannabisArticles.length > 0 
                     ? cannabisArticles.map(renderArticleCard).join('') 
-                    : '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No cannabis articles yet</p>';
+                    : '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No cannabis content yet</p>';
                 
                 latestContainer.innerHTML = latestArticles.length > 0 
                     ? latestArticles.map(renderArticleCard).join('') 
