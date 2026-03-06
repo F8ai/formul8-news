@@ -428,7 +428,9 @@
                             <span>📰 ${source}</span>
                         </div>
                         ${snippet ? `<p class="article-snippet">${snippet}</p>` : ''}
-                        <a href="https://chat.formul8.ai?message=${encodeURIComponent(`Tell me about this article: ${title} - ${article.url}`)}" target="_blank" class="ask-formul8-btn">
+                        <a href="https://chat.formul8.ai/c/new" target="_blank" class="ask-formul8-btn" 
+                           onclick="navigator.clipboard.writeText('Tell me about this article: ' + decodeURIComponent('${encodeURIComponent(title)}') + ' - ' + '${article.url}'); 
+                                    alert('Article reference copied to clipboard! Paste it in the chat.');">
                             <span>💬</span>
                             <span>Ask Formul8</span>
                         </a>
