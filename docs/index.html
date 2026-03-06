@@ -329,32 +329,56 @@
         const cannabisTopics = ['Cannabis Business', 'Medical Cannabis', 'Cannabis Research', 'Cannabis Policy', 'Cannabis Technology'];
         
         function getImageUrl(article) {
-            // Generate gradient based on article type and topics
-            const hash = Math.abs(article.id.split('').reduce((a, b) => {
-                a = ((a << 5) - a) + b.charCodeAt(0);
-                return a & a;
-            }, 0));
-            
-            // Define color schemes for different categories
-            let colors = ['667eea', '764ba2']; // Default purple gradient
+            // Generate category-specific gradient backgrounds
+            let gradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; // Default
+            let icon = '🔬'; // Default icon
             
             if (article.topics && article.topics.length > 0) {
                 const topic = article.topics[0].toLowerCase();
-                if (topic.includes('ai') || topic.includes('artificial intelligence') || topic.includes('machine learning')) {
-                    colors = ['4facfe', '00f2fe']; // Blue gradient for AI
+                if (topic.includes('ai') || topic.includes('artificial intelligence') || topic.includes('machine learning') || topic.includes('generative')) {
+                    gradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    icon = '🤖';
                 } else if (topic.includes('cannabis') || topic.includes('cbd') || topic.includes('medical cannabis')) {
-                    colors = ['43e97b', '38f9d7']; // Green gradient for Cannabis
+                    gradient = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+                    icon = '🌿';
                 } else if (topic.includes('business')) {
-                    colors = ['fa709a', 'fee140']; // Pink-yellow for Business
+                    gradient = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+                    icon = '💼';
                 } else if (topic.includes('research')) {
-                    colors = ['30cfd0', '330867']; // Teal-purple for Research
+                    gradient = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+                    icon = '🔬';
+                } else if (topic.includes('policy') || topic.includes('regulation')) {
+                    gradient = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
+                    icon = '⚖️';
+                } else if (topic.includes('technology')) {
+                    gradient = 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)';
+                    icon = '⚡';
+                } else if (topic.includes('ethics')) {
+                    gradient = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                    icon = '🎯';
                 }
             } else if (article.type === 'paper') {
-                colors = ['a8edea', 'fed6e3']; // Light gradient for papers
+                gradient = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+                icon = '📄';
+            } else if (article.type === 'news') {
+                gradient = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
+                icon = '📰';
             }
             
-            // Use Lorem Picsum with gradient overlay effect
-            return `https://picsum.photos/seed/${hash}/400/250`;
+            // Create SVG data URL with gradient and icon
+            const svg = `<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        ${gradient.match(/\#[a-f0-9]{6}/gi).map((color, i) => 
+                            `<stop offset="${i * 100}%" style="stop-color:${color};stop-opacity:1" />`
+                        ).join('')}
+                    </linearGradient>
+                </defs>
+                <rect width="400" height="250" fill="url(#grad)"/>
+                <text x="200" y="140" font-size="80" text-anchor="middle" opacity="0.3">${icon}</text>
+            </svg>`;
+            
+            return 'data:image/svg+xml;base64,' + btoa(svg);
         }
 
         function renderArticleCard(article) {
