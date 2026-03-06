@@ -373,6 +373,41 @@
             `;
         }
         
+
+        function renderCategorizedArticles(articles, categoryTopics) {
+            // Group articles by their primary topic
+            const grouped = {};
+            
+            articles.forEach(article => {
+                // Find the first matching category topic
+                let category = 'Other';
+                if (article.topics && article.topics.length > 0) {
+                    const matchingTopic = article.topics.find(t => categoryTopics.includes(t));
+                    if (matchingTopic) {
+                        category = matchingTopic;
+                    }
+                } else if (article.type === 'paper') {
+                    category = 'Research Papers';
+                }
+                
+                if (!grouped[category]) {
+                    grouped[category] = [];
+                }
+                grouped[category].push(article);
+            });
+            
+            // Render each category
+            let html = '';
+            Object.keys(grouped).sort().forEach(category => {
+                html += `<div class="category-section">
+                    <h4 style="color: var(--primary-light); font-size: 0.875rem; font-weight: 600; margin: 1rem 0 0.5rem 0; padding: 0 1rem; text-transform: uppercase; letter-spacing: 0.05em;">${category}</h4>
+                    ${grouped[category].map(renderArticleCard).join('')}
+                </div>`;
+            });
+            
+            return html;
+        }
+        
         async function loadArticles() {
             try {
                 const { data: articles, error } = await supabaseClient
@@ -458,11 +493,11 @@
                 latestContainer.className = '';
                 
                 aiContainer.innerHTML = aiArticles.length > 0 
-                    ? aiArticles.map(renderArticleCard).join('') 
+                    ? renderCategorizedArticles(aiArticles, aiTopics)
                     : '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No AI content yet</p>';
                 
                 cannabisContainer.innerHTML = cannabisArticles.length > 0 
-                    ? cannabisArticles.map(renderArticleCard).join('') 
+                    ? renderCategorizedArticles(cannabisArticles, cannabisTopics)
                     : '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No cannabis content yet</p>';
                 
                 latestContainer.innerHTML = latestArticles.length > 0 
