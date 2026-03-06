@@ -382,7 +382,7 @@
                         paper_items(journal, arxiv_id, arxiv_categories),
                         signal_topics(topics(name))
                     `)
-                    .order('created_at', { ascending: false })
+                    .order('published_at', { ascending: false })
                     .limit(100);
                 
                 if (error) throw error;
@@ -421,8 +421,16 @@
                     return hasCannabisTopic || isCannabisPaper;
                 }).slice(0, 8);
                 
-                // Latest articles (all types)
-                const latestArticles = allArticles.slice(0, 10);
+                // Latest articles (all types) - sort by published_at descending
+                const latestArticles = allArticles
+                    .sort((a, b) => {
+                        // Sort by published_at, with nulls at the end
+                        if (!a.published_at && !b.published_at) return 0;
+                        if (!a.published_at) return 1;
+                        if (!b.published_at) return -1;
+                        return new Date(b.published_at) - new Date(a.published_at);
+                    })
+                    .slice(0, 10);
                 
                 // Render
                 const aiContainer = document.getElementById('aiArticles');
