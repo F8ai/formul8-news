@@ -210,6 +210,32 @@
             margin: 0.75rem 0 0 0;
             padding: 0;
         }
+        .ask-formul8-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 0.75rem;
+        }
+        
+        .ask-formul8-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .ask-formul8-btn:active {
+            transform: translateY(0);
+        }
+
         
         .article-footer {
             padding: 1rem 1.5rem;
@@ -402,6 +428,10 @@
                             <span>📰 ${source}</span>
                         </div>
                         ${snippet ? `<p class="article-snippet">${snippet}</p>` : ''}
+                        <a href="https://chat.formul8.ai?context=${encodeURIComponent(JSON.stringify({title: title, url: article.url, source: source, snippet: snippet}))}" target="_blank" class="ask-formul8-btn">
+                            <span>💬</span>
+                            <span>Ask Formul8</span>
+                        </a>
                     </div>
                     ${article.topics.length > 0 ? `
                         <div class="article-footer">
