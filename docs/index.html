@@ -132,39 +132,38 @@
             border-radius: 12px;
             overflow: hidden;
             transition: all 0.3s;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
         
         .article-card:hover {
             border-color: var(--border-light);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transform: translateY(-1px);
         }
-        
-        .article-image {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            max-height: 240px;
+
+        .article-body {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            align-items: flex-start;
+        }
+
+        .article-thumb {
+            width: 80px;
+            height: 80px;
+            min-width: 80px;
+            border-radius: 8px;
             object-fit: cover;
-            object-position: center top;
-            display: block;
             background: var(--bg-card-hover);
-            border-bottom: 1px solid var(--border);
         }
         
         .article-header {
-            padding: 1.5rem;
+            flex: 1;
+            min-width: 0;
         }
         
         .article-type {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.75rem;
+            display: none;
         }
         
         .type-news {
@@ -183,10 +182,10 @@
         }
         
         .article-title {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             line-height: 1.4;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.4rem;
         }
         
         .article-title a {
@@ -201,65 +200,38 @@
         
         .article-meta {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             flex-wrap: wrap;
         }
         
         .article-snippet {
-            color: var(--text-secondary);
-            line-height: 1.7;
-            font-size: 0.875rem;
-            margin: 0.75rem 0 0 0;
-            padding: 0;
+            display: none;
         }
         .ask-formul8-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 0.75rem;
-        }
-        
-        .ask-formul8-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .ask-formul8-btn:active {
-            transform: translateY(0);
+            display: none;
         }
 
-        
         .article-footer {
-            padding: 1rem 1.5rem;
-            background: var(--bg-dark);
-            border-top: 1px solid var(--border);
-        }
-        
-        .article-topics {
+            padding: 0.5rem 1.25rem 0.75rem;
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
         }
         
+        .article-topics {
+            display: flex;
+            gap: 0.375rem;
+            flex-wrap: wrap;
+        }
+        
         .topic-tag {
-            background: rgba(16, 185, 129, 0.15);
+            background: rgba(16, 185, 129, 0.1);
             color: var(--primary-light);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            padding: 0.25rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
             font-weight: 600;
         }
         
@@ -451,21 +423,17 @@
             
             return `
                 <article class="article-card">
-                    ${imgUrl ? `<img class="article-image" src="${imgUrl}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
-                    <div class="article-header">
-                        <span class="article-type type-${article.type}">${article.type}</span>
-                        <h2 class="article-title">
-                            <a href="${article.url}" target="_blank">${title}</a>
-                        </h2>
-                        <div class="article-meta">
-                            <span>📅 ${date}</span>
-                            <span>📰 ${source}</span>
+                    <div class="article-body">
+                        ${imgUrl ? `<img class="article-thumb" src="${imgUrl}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+                        <div class="article-header">
+                            <h2 class="article-title">
+                                <a href="${article.url}" target="_blank">${title}</a>
+                            </h2>
+                            <div class="article-meta">
+                                <span>📅 ${date}</span>
+                                <span>📰 ${source}</span>
+                            </div>
                         </div>
-                        ${snippet ? `<p class="article-snippet">${snippet}</p>` : ''}
-                        <a href="https://chat.formul8.ai#article=${encodeURIComponent(article.url)}&title=${encodeURIComponent(title)}" target="_blank" class="ask-formul8-btn">
-                            <span>💬</span>
-                            <span>Ask Formul8</span>
-                        </a>
                     </div>
                     ${article.topics.length > 0 ? `
                         <div class="article-footer">
