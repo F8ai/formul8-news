@@ -28,6 +28,50 @@ function parseAllXMLTags(xml: string, tagName: string): string[] {
   return matches.map(m => m[1].trim());
 }
 
+function parseXMLSelfClosingAttribute(xml: string, tagName: string, attrName: string): string | null {
+  // Matches both self-closing and open tags: <tag attr="val" /> or <tag attr="val">
+  const regex = new RegExp(`<${tagName}[^>]*?${attrName}=["']([^"']+)["'][^>]*/?>`, 'i');
+  const match = xml.match(regex);
+  return match ? match[1] : null;
+}
+
+function extractImageUrl(itemXml: string, isAtom: boolean): string | null {
+  // 1. <media:content url="..." medium="image"> or <media:content url="..." type="image/...">
+  const mediaContent = itemXml.match(/<media:content[^>]*url=["']([^"']+)["'][^>]*>/i);
+  if (mediaContent) {
+    const tag = mediaContent[0];
+    const url = mediaContent[1];
+    if (tag.includes('medium="image"') || tag.match(/type=["']image\//i) || url.match(/\.(jpe?g|png|gif|webp)/i)) {
+      return url;
+    }
+  }
+
+  // 2. <media:thumbnail url="...">
+  const mediaThumbnail = parseXMLSelfClosingAttribute(itemXml, 'media:thumbnail', 'url');
+  if (mediaThumbnail) return mediaThumbnail;
+
+  // 3. <enclosure url="..." type="image/...">
+  const enclosureMatch = itemXml.match(/<enclosure[^>]*url=["']([^"']+)["'][^>]*type=["'](image\/[^"']+)["'][^>]*\/?>/i);
+  if (enclosureMatch) return enclosureMatch[1];
+  const enclosureReverse = itemXml.match(/<enclosure[^>]*type=["'](image\/[^"']+)["'][^>]*url=["']([^"']+)["'][^>]*\/?>/i);
+  if (enclosureReverse) return enclosureReverse[2];
+
+  // 4. <image><url>...</url></image> (RSS channel-level, sometimes per-item)
+  const imageUrl = parseXMLTag(itemXml, 'url');
+  if (imageUrl && imageUrl.match(/\.(jpe?g|png|gif|webp)/i)) return imageUrl;
+
+  // 5. First <img src="..."> in content:encoded, description, or Atom content
+  const contentBlock = parseXMLTag(itemXml, 'content:encoded')
+    || parseXMLTag(itemXml, 'description')
+    || (isAtom ? parseXMLTag(itemXml, 'content') : null);
+  if (contentBlock) {
+    const imgMatch = contentBlock.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (imgMatch) return imgMatch[1];
+  }
+
+  return null;
+}
+
 function stripHTML(html: string): string {
   return html.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ').trim();
 }
@@ -123,6 +167,9 @@ serve(async (req) => {
           continue;
         }
 
+        // Extract feature image from feed item
+        const image_url = extractImageUrl(itemXml, isAtom);
+
         // Compute content fingerprint for deduplication
         const normalizedContent = stripHTML(content || description || "").toLowerCase().trim().replace(/\s+/g, " ");
         const encoder = new TextEncoder();
@@ -172,6 +219,7 @@ serve(async (req) => {
             url: link,
             published_at: pubDate ? new Date(pubDate).toISOString() : null,
             content_snippet,
+            image_url,
           })
           .select()
           .single();
