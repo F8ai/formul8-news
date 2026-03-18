@@ -285,6 +285,10 @@
             }
         }
         
+        .mobile-tabs {
+            display: none;
+        }
+
         @media (max-width: 1200px) {
             .main-layout {
                 grid-template-columns: 1fr;
@@ -292,6 +296,68 @@
             
             .sidebar {
                 position: static;
+            }
+
+            .mobile-tabs {
+                display: flex;
+                position: sticky;
+                top: 60px;
+                z-index: 99;
+                background: var(--bg-dark);
+                border-bottom: 1px solid var(--border);
+                padding: 0;
+                gap: 0;
+            }
+
+            .mobile-tab {
+                flex: 1;
+                padding: 0.75rem 0.5rem;
+                text-align: center;
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: var(--text-muted);
+                background: none;
+                border: none;
+                border-bottom: 2px solid transparent;
+                cursor: pointer;
+                transition: color 0.2s, border-color 0.2s;
+                font-family: inherit;
+            }
+
+            .mobile-tab:hover {
+                color: var(--text-secondary);
+            }
+
+            .mobile-tab.active {
+                color: var(--primary-light);
+                border-bottom-color: var(--primary);
+            }
+
+            .mobile-tab.active[data-tab="cannabis"] {
+                color: #34d399;
+                border-bottom-color: #10b981;
+            }
+
+            .mobile-tab.active[data-tab="news"] {
+                color: #818cf8;
+                border-bottom-color: #6366f1;
+            }
+
+            .mobile-tab.active[data-tab="ai"] {
+                color: #f472b6;
+                border-bottom-color: #ec4899;
+            }
+
+            .main-layout .panel {
+                display: none;
+            }
+
+            .main-layout .panel.panel-active {
+                display: block;
+            }
+
+            .container {
+                padding: 1rem;
             }
         }
     </style>
@@ -310,10 +376,16 @@
         </div>
     </header>
     
+    <nav class="mobile-tabs">
+        <button class="mobile-tab" data-tab="cannabis" onclick="switchTab('cannabis')">🌿 Cannabis</button>
+        <button class="mobile-tab active" data-tab="news" onclick="switchTab('news')">📰 News</button>
+        <button class="mobile-tab" data-tab="ai" onclick="switchTab('ai')">🤖 AI</button>
+    </nav>
+
     <div class="container">
         <div class="main-layout">
             <!-- Left Sidebar: AI Articles -->
-            <aside class="sidebar">
+            <aside class="sidebar panel panel-ai">
                 <div class="sidebar-header">
                     <h3 class="sidebar-title">🤖 AI Categories</h3>
                 </div>
@@ -323,7 +395,7 @@
             </aside>
             
             <!-- Center: Latest News -->
-            <main>
+            <main class="panel panel-news panel-active">
                 <div class="sidebar-header">
                     <h3 class="sidebar-title">📰 Latest News</h3>
                 </div>
@@ -333,7 +405,7 @@
             </main>
             
             <!-- Right Sidebar: Cannabis Articles -->
-            <aside class="sidebar">
+            <aside class="sidebar panel panel-cannabis">
                 <div class="sidebar-header">
                     <h3 class="sidebar-title">🌿 Cannabis Categories</h3>
                 </div>
@@ -545,6 +617,13 @@
             return textarea.value;
         }
         
+        function switchTab(tab) {
+            document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.mobile-tab[data-tab="${tab}"]`).classList.add('active');
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('panel-active'));
+            document.querySelector(`.panel-${tab}`).classList.add('panel-active');
+        }
+
         loadArticles();
         setInterval(loadArticles, 5 * 60 * 1000);
     </script>
