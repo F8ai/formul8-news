@@ -35,41 +35,74 @@ function parseXMLSelfClosingAttribute(xml: string, tagName: string, attrName: st
   return match ? match[1] : null;
 }
 
+function decodeXmlEntities(url: string): string {
+  return url.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+}
+
+const LOGO_BLOCKLIST = [
+  '/rss.png', '/rss.jpg', '/favicon', '/icon.png', '/logo',
+  '/apple-touch-icon', '/feed-icon', '/default-thumb',
+  'gravatar.com', 'feeds.feedburner.com',
+];
+
+function isLikelyLogo(url: string): boolean {
+  const lower = url.toLowerCase();
+  return LOGO_BLOCKLIST.some(p => lower.includes(p));
+}
+
+function upgradeRedditThumbnail(url: string): string {
+  // Reddit thumbnails come in width=320 or width=640; upgrade to 960
+  return url.replace(/width=\d+/, 'width=960');
+}
+
 function extractImageUrl(itemXml: string, isAtom: boolean): string | null {
-  // 1. <media:content url="..." medium="image"> or <media:content url="..." type="image/...">
+  let url: string | null = null;
+
+  // 1. <media:content url="..." medium="image"> or type="image/..."
   const mediaContent = itemXml.match(/<media:content[^>]*url=["']([^"']+)["'][^>]*>/i);
   if (mediaContent) {
     const tag = mediaContent[0];
-    const url = mediaContent[1];
-    if (tag.includes('medium="image"') || tag.match(/type=["']image\//i) || url.match(/\.(jpe?g|png|gif|webp)/i)) {
-      return url;
+    const candidate = mediaContent[1];
+    if (tag.includes('medium="image"') || tag.match(/type=["']image\//i) || candidate.match(/\.(jpe?g|png|gif|webp)/i)) {
+      url = candidate;
     }
   }
 
   // 2. <media:thumbnail url="...">
-  const mediaThumbnail = parseXMLSelfClosingAttribute(itemXml, 'media:thumbnail', 'url');
-  if (mediaThumbnail) return mediaThumbnail;
-
-  // 3. <enclosure url="..." type="image/...">
-  const enclosureMatch = itemXml.match(/<enclosure[^>]*url=["']([^"']+)["'][^>]*type=["'](image\/[^"']+)["'][^>]*\/?>/i);
-  if (enclosureMatch) return enclosureMatch[1];
-  const enclosureReverse = itemXml.match(/<enclosure[^>]*type=["'](image\/[^"']+)["'][^>]*url=["']([^"']+)["'][^>]*\/?>/i);
-  if (enclosureReverse) return enclosureReverse[2];
-
-  // 4. <image><url>...</url></image> (RSS channel-level, sometimes per-item)
-  const imageUrl = parseXMLTag(itemXml, 'url');
-  if (imageUrl && imageUrl.match(/\.(jpe?g|png|gif|webp)/i)) return imageUrl;
-
-  // 5. First <img src="..."> in content:encoded, description, or Atom content
-  const contentBlock = parseXMLTag(itemXml, 'content:encoded')
-    || parseXMLTag(itemXml, 'description')
-    || (isAtom ? parseXMLTag(itemXml, 'content') : null);
-  if (contentBlock) {
-    const imgMatch = contentBlock.match(/<img[^>]+src=["']([^"']+)["']/i);
-    if (imgMatch) return imgMatch[1];
+  if (!url) {
+    url = parseXMLSelfClosingAttribute(itemXml, 'media:thumbnail', 'url');
   }
 
-  return null;
+  // 3. <enclosure url="..." type="image/...">
+  if (!url) {
+    const enc = itemXml.match(/<enclosure[^>]*url=["']([^"']+)["'][^>]*type=["'](image\/[^"']+)["'][^>]*\/?>/i);
+    if (enc) url = enc[1];
+    if (!url) {
+      const encRev = itemXml.match(/<enclosure[^>]*type=["'](image\/[^"']+)["'][^>]*url=["']([^"']+)["'][^>]*\/?>/i);
+      if (encRev) url = encRev[2];
+    }
+  }
+
+  // 4. First <img src="..."> in content
+  if (!url) {
+    const contentBlock = parseXMLTag(itemXml, 'content:encoded')
+      || parseXMLTag(itemXml, 'description')
+      || (isAtom ? parseXMLTag(itemXml, 'content') : null);
+    if (contentBlock) {
+      const imgMatch = contentBlock.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (imgMatch) url = imgMatch[1];
+    }
+  }
+
+  if (!url) return null;
+
+  // Post-processing
+  url = decodeXmlEntities(url);
+  if (isLikelyLogo(url)) return null;
+  if (url.includes('reddit.com') || url.includes('redd.it')) {
+    url = upgradeRedditThumbnail(url);
+  }
+  return url;
 }
 
 function stripCDATA(text: string): string {
@@ -133,6 +166,7 @@ serve(async (req) => {
     
     // Detect feed type (RSS 2.0 or Atom 1.0)
     const isAtom = feedXml.includes('<feed') && feedXml.includes('xmlns="http://www.w3.org/2005/Atom"');
+    const isGoogleNews = endpoint.endpoint_url.includes('news.google.com');
     
     let items_processed = 0;
     let items_created = 0;
@@ -236,11 +270,29 @@ serve(async (req) => {
           continue;
         }
 
+        // For Google News, extract the real publisher from <source> tag
+        // and strip the " - Publisher" suffix from the title
+        let source_name = endpoint.sources.name;
+        if (isGoogleNews) {
+          const realSource = parseXMLTag(itemXml, 'source');
+          if (realSource) {
+            source_name = stripCDATA(realSource);
+            // Strip " - Publisher" suffix from the title
+            const suffix = ` - ${source_name}`;
+            if (signalItem.title?.endsWith(suffix)) {
+              await supabaseClient
+                .from("signal_items")
+                .update({ title: signalItem.title.slice(0, -suffix.length) })
+                .eq("id", signalItem.id);
+            }
+          }
+        }
+
         // Create news_item
         const { error: newsError } = await supabaseClient.from("news_items").insert({
           signal_item_id: signalItem.id,
           author,
-          source_name: endpoint.sources.name,
+          source_name,
           content_full,
         });
 

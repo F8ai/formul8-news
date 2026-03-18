@@ -144,10 +144,12 @@
         .article-image {
             width: 100%;
             aspect-ratio: 16 / 9;
+            max-height: 240px;
             object-fit: cover;
-            object-position: center;
+            object-position: center top;
             display: block;
             background: var(--bg-card-hover);
+            border-bottom: 1px solid var(--border);
         }
         
         .article-header {
@@ -429,15 +431,27 @@
         const aiTopics = ['AI Research', 'AI Business', 'Machine Learning', 'Generative AI', 'AI Ethics', 'Artificial Intelligence', 'Large Language Models', 'Computer Vision', 'AI Tools', 'AI Models', 'AI Infrastructure'];
         const cannabisTopics = ['Cannabis', 'Medical Cannabis', 'Cannabis Research', 'Cannabis Regulation', 'Cannabis Cultivation', 'CBD', 'THC', 'Psychedelics'];
         
+        function cleanImageUrl(url) {
+            if (!url) return null;
+            url = url.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+            const logoPatterns = ['/rss.png', '/rss.jpg', '/favicon', '/icon.png', '/logo', '/apple-touch-icon', '/feed-icon', 'gravatar.com'];
+            if (logoPatterns.some(p => url.toLowerCase().includes(p))) return null;
+            if (url.includes('redd.it') || url.includes('reddit.com')) {
+                url = url.replace(/width=\d+/, 'width=960');
+            }
+            return url;
+        }
+
         function renderArticleCard(article) {
             const date = article.published_at ? new Date(article.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent';
             const title = decodeHtml(article.title);
             const source = decodeHtml(article.source_name);
             const snippet = article.content_snippet ? decodeHtml(article.content_snippet).substring(0, 120) + '...' : '';
+            const imgUrl = cleanImageUrl(article.image_url);
             
             return `
                 <article class="article-card">
-                    ${article.image_url ? `<img class="article-image" src="${article.image_url}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+                    ${imgUrl ? `<img class="article-image" src="${imgUrl}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
                     <div class="article-header">
                         <span class="article-type type-${article.type}">${article.type}</span>
                         <h2 class="article-title">
