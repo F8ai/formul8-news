@@ -72,6 +72,10 @@ function extractImageUrl(itemXml: string, isAtom: boolean): string | null {
   return null;
 }
 
+function stripCDATA(text: string): string {
+  return text.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').trim();
+}
+
 function stripHTML(html: string): string {
   return html.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ').trim();
 }
@@ -161,6 +165,9 @@ serve(async (req) => {
           description = parseXMLTag(itemXml, 'description');
           content = parseXMLTag(itemXml, 'content:encoded') || description;
         }
+
+        if (title) title = stripCDATA(title);
+        if (link) link = stripCDATA(link);
 
         if (!title || !link) {
           errors.push({ item_link: link || "unknown", error: "Missing required fields (title or link)" });
