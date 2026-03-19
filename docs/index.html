@@ -550,17 +550,22 @@
                 })
                 .slice(0, 10);
                 
-                // Latest news articles - sort by published_at descending
+                const allRelevantKeywords = [...aiKeywords, ...cannabisKeywords];
                 const latestArticles = allArticles
-                    .filter(a => a.type === 'news')
+                    .filter(a => {
+                        if (a.type !== 'news') return false;
+                        const titleLower = a.title.toLowerCase();
+                        const hasRelevantTopic = a.topics.some(t => aiTopics.includes(t) || cannabisTopics.includes(t));
+                        const hasRelevantKeyword = allRelevantKeywords.some(k => titleLower.includes(k));
+                        return hasRelevantTopic || hasRelevantKeyword;
+                    })
                     .sort((a, b) => {
-                        // Sort by published_at, with nulls at the end
                         if (!a.published_at && !b.published_at) return 0;
                         if (!a.published_at) return 1;
                         if (!b.published_at) return -1;
                         return new Date(b.published_at) - new Date(a.published_at);
                     })
-                    .slice(0, 10);
+                    .slice(0, 20);
                 
                 // Render
                 const aiContainer = document.getElementById('aiArticles');
